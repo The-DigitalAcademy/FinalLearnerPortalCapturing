@@ -1,3 +1,4 @@
 streamlit_option_menu
 psycopg2
 hydralit_components
+streamlit==23.3.0
