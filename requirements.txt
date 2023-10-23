@@ -1,3 +1,4 @@
 streamlit
 streamlit_option_menu
-psycog2
+psycopg2-binary==1.0.1
+
