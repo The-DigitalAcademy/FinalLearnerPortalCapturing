@@ -24,7 +24,8 @@ e. View an Individual employee
 
 ### How to run this app
 
-run pip install requirements.txt
+run "pip install requirements.txt"
+run "streamlit run testing.py"
 
 
 
