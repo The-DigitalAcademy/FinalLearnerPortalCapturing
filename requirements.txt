@@ -1,4 +1,10 @@
 streamlit
 streamlit_option_menu
 psycopg2-binary==2.1.12
+hydralit_components
+streamlit_authenticator
+pandas
+numpy
+PIL
+
 
