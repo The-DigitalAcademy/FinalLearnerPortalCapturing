@@ -14,5 +14,8 @@ On this Project I am building an  Employee Management System performs simple tas
 
 
 c. Delete an employee
+
+
 d. View a list of all employees
+
 e. View an Individual employee
