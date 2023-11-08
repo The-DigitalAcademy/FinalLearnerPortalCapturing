@@ -9,8 +9,10 @@ On this Project I am building an  Employee Management System performs simple tas
 
 # Features
 
-#### Create a new Employee
-#### Edit an Existing Employee
+a.  Create a new Employee
+
+
+b. Edit an Existing Employee
 
 
 c. Delete an employee
