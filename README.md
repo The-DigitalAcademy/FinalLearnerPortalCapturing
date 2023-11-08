@@ -21,3 +21,11 @@ c. Delete an employee
 d. View a list of all employees
 
 e. View an Individual employee
+
+### How to run this app
+
+run pip install requirements.txt
+
+
+
+
