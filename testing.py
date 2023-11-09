@@ -138,7 +138,6 @@ if authentication_status:
                     st.header("Personal Details")
                     try:
                         st.session_state.dff = personal
-
                         edited_dff = st.data_editor(st.session_state.dff)
                         st.write(edited_dff['id'][0])
                         st.session_state.dff = edited_dff
@@ -209,7 +208,7 @@ if authentication_status:
                 
                 #  st.button("Add"):
                 with st.form("my_form"):
-
+                    
                     conn, cur = connection()
                     conn.execute("SELECT id, name FROM roleees")
                     roleesoption = conn.fetchall()
@@ -435,42 +434,5 @@ if authentication_status:
                 # Every form must have a submit button.
                 submitted = st.form_submit_button("submit")
 
-
-    elif choice=='Add Tech Skill Rating':
-            with st.form("my_form"):
-                fn = st.text_input("Team Name:")
-                ln = st.text_input("Description:")
-
-                # Every form must have a submit button.
-                submitted = st.form_submit_button("submit")
-
-    elif choice=='Search':
-            with st.form("my_form"):
-                conn = psycopg2.connect(database="shaper",
-                host="dpg-ckp2uroujous73d8htug-a.oregon-postgres.render.com",
-                user="admin",
-                password="NFLa5XvzRkU9ihAFxJ91WsX0zfy1jdcv",
-                port="5432")
-                cursor = conn.cursor()
-                cursor.execute("SELECT firstname, lastname FROM learners" )
-                xxx = cursor.fetchall()
-                cursor.close()
-
-                option = st.selectbox(
-                "Search for Learner",
-                (xxx),
-                index=None,
-                placeholder="Select learner...",
-                )
-
-                # Every form must have a submit button.
-                submitted = st.form_submit_button("submit")
-                if submitted:
-                    firstname = option[:-1][0]
-                    lastname = option[1:][0]
-                    cursor = conn.cursor()
-                    xx = cursor.execute("SELECT * FROM learners where firstname = %s and  lastname = %s", (firstname, lastname))
-                        
-                    st.write(xx)
     
 st.markdown(footer,unsafe_allow_html=True)
