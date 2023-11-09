@@ -82,9 +82,9 @@ if authentication_status:
     
     st.image(image)
     menu_data = [
-        {'label':"View/Search Employee"},
+        {'label':"View/Edit/Delete Employee"},
         {'label':"Add Employees"},
-        {'label':"Add/Edit Departments"},
+        {'label':"Add/Edit/Delete Departments"},
         {'label':"Add/Edit Roles"},
         {'label':"Add/Edit Skill"},
         {'label':"Add/Edit Project"},
@@ -98,42 +98,46 @@ if authentication_status:
     choice = menu_id
 
     if choice=='View/Search Employee':
-        conn, cur = connection()
-        conn.execute("SELECT id, dept_name FROM departments")
-        deptss = conn.fetchall()
-        deptss =  pd.DataFrame(deptss, columns=['id','name'])
+        try:
+            conn, cur = connection()
+            conn.execute("SELECT id, dept_name FROM departments")
+            deptss = conn.fetchall()
+            deptss =  pd.DataFrame(deptss, columns=['id','name'])
         
-        COHORT = st.selectbox(
-        "Select department",
-        (deptss['name']),
-        index=None,
-        placeholder="Select department here...",
-        )
-        
-        ddd = []
+            COHORT = st.selectbox(
+            "Select department",
+            (deptss['name']),
+            index=None,
+            placeholder="Select department here...",
+            )
+            conn.close()
+        except:
+            st.write("Please make sure that you select a user")
+            st.stop()
+            
         try:
             conn, cur = connection()
             conn.execute("SELECT id, firstname, lastname , male, idnumber FROM employees")
             ddd = conn.fetchall()
             personal =  pd.DataFrame(ddd, columns=['id','firstname','lastname','male','idnumber'])
             personal['fullname'] = personal['firstname'] + " " + personal['lastname']
+            conn.close()
         except:
             st.write("Please make sure that you select a user")
             st.stop()
 
-        ddd.insert(0, "List all")
         option = st.selectbox(
         "Search for employee",
         (personal['fullname']),
         index=None,
         placeholder="type employee name...",
         )
-        tab1, tab2, tab3, tab4= st.tabs(["Personal Details", "Contact Details", "Educational Details","Personal Details" ])
+        tab1, tab2, tab3, tab4= st.tabs(["Personal Details", "Contact Details", "Educational Details","Dependants Details" ])
 
         with tab1:
                                 
                 if option:
-                    st.header("Show Contacts")
+                    st.header("Show Personal Details")
                     try:
                         st.session_state.dff = personal
 
