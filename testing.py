@@ -273,8 +273,8 @@ if authentication_status:
                         if genderD =='Male':
                             genderDid = True           
                         relationship  = st.selectbox('Please Select Relationship Below:',
-                                              ('Email', 'Home phone', 'Mobile phone'))    
-                        if relationship =='Email':
+                                              ('Spouse', 'Parent', 'Sibling'))    
+                        if relationship =='Spouse':
                             relationshipid = 1            
                         phonenumber  = st.text_input("Contact Number:")                    
 
