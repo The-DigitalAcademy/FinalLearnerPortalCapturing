@@ -1,13 +1,12 @@
 import streamlit as st
 # @st.cache(suppress_st_warning=False)
 # st.set_page_config(layout="wide")
-st.set_page_config(page_title="Sales Dashboard", page_icon=":bar_chart:", layout="wide")
+st.set_page_config(page_title="Employee Management Tool", page_icon=":bar_chart:", layout="wide")
 import numpy as np
 from streamlit_option_menu import option_menu
 import psycopg2
 from datetime import datetime
 import random
-current_dateTime = datetime.now()
 from psycopg2.extensions import AsIs
 import hydralit_components as hc
 import pickle
@@ -16,8 +15,9 @@ import pandas as pd  # pip install pandas openpyxl
 import streamlit_authenticator as stauth  # pip install streamlit-authenticator
 from PIL import Image
 import re
+
 image = Image.open('logo.jpeg')
-import streamlit as st
+current_dateTime = datetime.now()
 
 footer="""<style>
 a:link , a:visited{
