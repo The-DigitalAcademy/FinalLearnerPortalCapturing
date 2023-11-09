@@ -56,8 +56,7 @@ def connection():
     return cursor, conn
 
 # --- USER AUTHENTICATION ---
-names = ["Peter Parker", "Rebecca Miller"]
-usernames = ["pparker", "rmiller"]
+
 
 # load hashed passwords
 file_path = Path(__file__).parent / "hashed_pw.pkl"
