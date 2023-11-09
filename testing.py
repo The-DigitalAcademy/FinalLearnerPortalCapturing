@@ -214,7 +214,10 @@ if authentication_status:
                         conn.execute("SELECT id, name FROM roleees")
                         roleesoption = conn.fetchall()
                         roleesoption =  pd.DataFrame(roleesoption, columns=['id','name'])
-                        
+                    except:
+                        st.write("Something wrong with reading roleees tables")
+                        st.stop()
+                    try:
                         conn.execute("SELECT id, dept_name FROM departments")
                         deptoption = conn.fetchall()
                         deptoption =  pd.DataFrame(deptoption, columns=['id','dept_name'])
