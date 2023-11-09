@@ -147,6 +147,8 @@ if authentication_status:
                         ln =edited_dff['lastname'][0]
                         male =edited_dff['male'][0]
                         idnumber = edited_dff['idnumber'].astype(np.int64)
+                        
+                        conn, cur = connection()
                         conn.execute("UPDATE employees SET firstname=%s, lastname=%s, male=%s, idnumber=%s  where id = %s", (fn,ln,bool(male),int(idnumber), int(id)))
                         cur.commit()
                       
@@ -165,7 +167,7 @@ if authentication_status:
                                 
             try:
                 conn, cur = connection()
-                conn.execute("SELECT id, physicaladdress, postaladdress , phonenumber, email, postalcode FROM employee_contacts where id=%s", (int(id),))
+                conn.execute("SELECT id, physicaladdress, postaladdress , phonenumber, email, postalcode FROM employee_contacts where id = %s", (int(id),))
                 ccc = conn.fetchall()
                 contacts =  pd.DataFrame(ccc, columns=['id', 'physicaladdress', 'postaladdress' , 'phonenumber', 'email', 'postalcode'])
              
@@ -180,10 +182,10 @@ if authentication_status:
                 poa =edited_dfff['postaladdress'][0]
                 phone =edited_dfff['phonenumber'][0]
                 email = edited_dfff['email'][0]
-                conn.execute("UPDATE employee_contacts SET physicaladdress=%s, postaladdress=%s,phonenumber=%s, email=%s  where id = 1", (pa,poa,int(phone),email))
+                
+                conn.execute("UPDATE employee_contacts SET physicaladdress=%s, postaladdress=%s,phonenumber=%s, email=%s  where id = %s", (pa,poa,int(phone),email,int(id))
                 cur.commit()
 
-                st.write('df at end:',ln)
                 if st.button("deletion"):
                     conn.execute("DELETE FROM employee_contacts where id = %s", int(id))
                     cur.commit()
@@ -205,7 +207,6 @@ if authentication_status:
         
     elif choice=='Add Employees':
                             
-                
                 #  st.button("Add"):
                 with st.form("my_form"):
                     try:
@@ -234,6 +235,7 @@ if authentication_status:
                         if gender =='Male':
                             genderid = True
                         idnumber = st.text_input("ID Number:")
+                        
                     with col2:
                         st.header("Contact Details")
                         physicaladd = st.text_area("Postal Address")
@@ -251,7 +253,6 @@ if authentication_status:
                         role = st.selectbox('Please Select Role Below:',
                                               (roleesoption['name']))
                         
-                       
                         skill  = st.selectbox('Please Select Skill Below:',
                                               ('Email', 'Home phone', 'Mobile phone'))
                         if skill =='Email':
