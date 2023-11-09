@@ -1,6 +1,4 @@
 import streamlit as st
-# @st.cache(suppress_st_warning=False)
-# st.set_page_config(layout="wide")
 st.set_page_config(page_title="Employee Management Tool", page_icon=":bar_chart:", layout="wide")
 import numpy as np
 from streamlit_option_menu import option_menu
@@ -137,7 +135,7 @@ if authentication_status:
         with tab1:
                                 
                 if option:
-                    st.header("Show Personal Details")
+                    st.header("Personal Details")
                     try:
                         st.session_state.dff = personal
 
@@ -164,7 +162,7 @@ if authentication_status:
                         st.stop()
 
         with tab2:
-            st.header("Show/Edit contact details")
+            st.header("Contact Details")
                                 
             try:
                 conn, cur = connection()
@@ -198,63 +196,12 @@ if authentication_status:
 
         with tab3:
                                         st.header("Show Soft Skills Rating")
-                                        try:
-                                            conn,cur = connection()
-                                            conn.execute("SELECT * FROM softskills where id = %s", (id,))
-                                            ss = conn.fetchall()
-                                            ss1 = float(ss[0][1])
-                                            ss2 = float(ss[0][2])
-                                            ss3 = float(ss[0][3])
-                                            ss4 = float(ss[0][4])
-                                            ss5 = float(ss[0][5])
-                                        
-                                            chart_data = pd.DataFrame({"techskill": [ss1, ss2, ss3, ss4, ss5], "initials": [ss4, ss5, ss5, ss3, ss1]})
-                                            st.bar_chart(chart_data)
-                                        
-                                        except:
-                                                st.write("Please make sure that you select a user")
-                                                st.stop()
+                                      
 
         with tab4:
                                         st.header("Show Personal Details")
 
-                                        try:
-                                            firstname = option[:-1][0]
-                                            lastname = option[1:][0]
-                                            conn,cur = connection()
-                                            conn.execute("SELECT * FROM learners where firstname = %s and  lastname = %s", (firstname, lastname))
-                                            fff = conn.fetchall()
-
-
-                                            id = fff[0][0]
-                                            email = fff[0][2]
-                                            name = fff[0][1]
-                                            surname = fff[0][2]
-                                            idnumber = fff[0][12]
-                                            homelanguage = fff[0][22]
-                                            male = fff[0][3]
-                                            southafrican = fff[0][4]
-                                            matric = fff[0][6]
-                                            currentlystudying = fff[0][5]
-                                            qualification = fff[0][14]
-                                            nokname = fff[0][8]
-                                            noknumber = fff[0][10]
-                                            province = fff[0][21]
-                                            city = fff[0][20]
-                                            phonenumber = fff[0][9]
-                                            address = fff[0][7]
-                                            postalcode = fff[0][6]
-                                            if male == True:
-                                                gender = "Male"
-                                            # st.write(" Gender: " + gender)
-                                            if southafrican == True:
-                                                citizenship = "South African"
-                                            # st.write(" Citizenship:" + citizenship)
-                                            PersonalD = pd.DataFrame([[name,surname,idnumber,homelanguage,gender,citizenship]], columns=['name','surname','idnumber','homelanguage','gender','citizenship'])
-                                            st.write(province)
-                                        except:
-                                                st.write("Please make sure that you select a user", "vsdfmnkn")
-                                                st.stop()
+                            
 
         
     elif choice=='Add Employees':
