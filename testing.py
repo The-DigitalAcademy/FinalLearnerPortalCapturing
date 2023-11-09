@@ -214,16 +214,27 @@ if authentication_status:
                         conn.execute("SELECT id, name FROM roleees")
                         roleesoption = conn.fetchall()
                         roleesoption =  pd.DataFrame(roleesoption, columns=['id','name'])
+                        conn.close()
                     except:
                         st.write("Something wrong with reading roleees tables")
                         st.stop()
                     try:
+                        conn, cur = connection()
                         conn.execute("SELECT id, dept_name FROM departments")
                         deptoption = conn.fetchall()
                         deptoption =  pd.DataFrame(deptoption, columns=['id','dept_name'])
                         conn.close()
                     except:
-                        st.write("Please make sure that you select a user")
+                        st.write("Something wrong with reading departments tables")
+                        st.stop()
+                    try:
+                        conn, cur = connection()
+                        conn.execute("SELECT id, skill_name FROM skills")
+                        skilllsoption = conn.fetchall()
+                        skilllsoption =  pd.DataFrame(skilllsoption, columns=['id','skill_name'])
+                        conn.close()
+                    except:
+                        st.write("Something wrong with reading roleees tables")
                         st.stop()
                         
                     col1, col2, col3, col4,col5 = st.columns(5)
@@ -257,9 +268,7 @@ if authentication_status:
                                               (roleesoption['name']))
                         
                         skill  = st.selectbox('Please Select Skill Below:',
-                                              ('Email', 'Home phone', 'Mobile phone'))
-                        if skill =='Email':
-                            skillid = 1
+                                              (skillsoption['skill_name']))
 
                         department  = st.selectbox('Please Select Department Below:',
                                               (deptoption['dept_name']))
