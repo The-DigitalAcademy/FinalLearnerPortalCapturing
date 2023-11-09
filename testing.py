@@ -208,17 +208,20 @@ if authentication_status:
                 
                 #  st.button("Add"):
                 with st.form("my_form"):
-                    
-                    conn, cur = connection()
-                    conn.execute("SELECT id, name FROM roleees")
-                    roleesoption = conn.fetchall()
-                    roleesoption =  pd.DataFrame(roleesoption, columns=['id','name'])
-                    
-                    conn, cur = connection()
-                    conn.execute("SELECT id, dept_name FROM departments")
-                    deptoption = conn.fetchall()
-                    deptoption =  pd.DataFrame(deptoption, columns=['id','dept_name'])
-                    
+                    try:
+                        conn, cur = connection()
+                        conn.execute("SELECT id, name FROM roleees")
+                        roleesoption = conn.fetchall()
+                        roleesoption =  pd.DataFrame(roleesoption, columns=['id','name'])
+                        
+                        conn.execute("SELECT id, dept_name FROM departments")
+                        deptoption = conn.fetchall()
+                        deptoption =  pd.DataFrame(deptoption, columns=['id','dept_name'])
+                        conn.close()
+                    except:
+                        st.write("Please make sure that you select a user")
+                        st.stop()
+                        
                     col1, col2, col3, col4,col5 = st.columns(5)
 
                     with col1:
