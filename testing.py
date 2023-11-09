@@ -195,11 +195,11 @@ if authentication_status:
                 st.stop()
 
         with tab3:
-                                        st.header("Show Soft Skills Rating")
+            st.header("Educational Details")
                                       
 
         with tab4:
-                                        st.header("Show Personal Details")
+            st.header("Dependants Details")
 
                             
 
