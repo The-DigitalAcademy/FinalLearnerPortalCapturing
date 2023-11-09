@@ -287,12 +287,12 @@ if authentication_status:
                             relationshipid = 1            
                         phonenumber  = st.text_input("Contact Number:")                    
 
-                        # def validate_email(email):  
-                        #     if re.match(r"[^@]+@[^@]+\.[^@]+", email):  
-                        #         return True  
-                        #     return st.write("Please make sure email is valid")
+                        def validate_email(email):  
+                            if re.match(r"[^@]+@[^@]+\.[^@]+", email):  
+                                return True  
+                            return st.write("Please make sure email is valid")
     
-                        # validate_email(email)
+                        validate_email(email)
 
                 # Every form must have a submit button.
                     submitted = st.form_submit_button("Submit")
@@ -301,7 +301,6 @@ if authentication_status:
                         conn, cur = connection()
                         conn.execute("INSERT into employees(firstname, lastname, initials,male, idnumber, created_at, updated_at, published_at, created_by_id, updated_by_id) VALUES (%s, %s,%s, %s, %s, %s, %s, %s, %s, %s )", (fn,ln, initials,genderid, idnumber,current_dateTime,current_dateTime,current_dateTime,cc,cc))
                         cur.commit()
-                        # conn.close()
 
                         conn.execute("SELECT id from employees where firstname=%s AND lastname=%s", (fn,ln))
                         ccc = conn.fetchall()
@@ -344,7 +343,6 @@ if authentication_status:
                         cur.commit()
 
                         # conn.execute("INSERT into roleees(name, description, created_at, updated_at, published_at, created_by_id, updated_by_id) VALUES (%s, %s,%s, %s, %s, %s, %s )", (name,description, phonenumber,genderDid,current_dateTime,current_dateTime,current_dateTime,cc,cc))
-                        # cur.commit()
 
                         conn.execute("SELECT id from roleees where name=%s ", (role,))
                         ccc = conn.fetchall()
@@ -373,16 +371,25 @@ if authentication_status:
             # Every form must have a submit button.
                 submitted = st.form_submit_button("Submit")
                 if submitted:
-                    cc = 1
-                    conn, cur = connection()
-                    conn.execute("INSERT into departments(dept_name, description, created_at, updated_at, published_at, created_by_id, updated_by_id) VALUES (%s, %s,%s, %s, %s, %s, %s )", (dept_name,description,current_dateTime,current_dateTime,current_dateTime,cc,cc))
-                    cur.commit()
-                    conn.close()
-                    
-         
-            conn, cur = connection()
-            conn.execute("SELECT id, dept_name, description FROM departments")
-            ddd = conn.fetchall()
+                    try:
+                        cc = 1
+                        conn, cur = connection()
+                        conn.execute("INSERT into departments(dept_name, description, created_at, updated_at, published_at, created_by_id, updated_by_id) VALUES (%s, %s,%s, %s, %s, %s, %s )", (dept_name,description,current_dateTime,current_dateTime,current_dateTime,cc,cc))
+                        cur.commit()
+                        conn.close()
+                    except:
+                        st.write("Something wrong with inserting into departmments tables")
+                        st.stop()
+                        
+            try:
+                conn, cur = connection()
+                conn.execute("SELECT id, dept_name, description FROM departments")
+                ddd = conn.fetchall()
+                conn.close()
+            except:
+                    st.write("Something wrong with selecting from the departmments tables")
+                    st.stop()
+                
             departmentdata =  pd.DataFrame(ddd, columns=['id','dept_name','description'])
             option = st.selectbox(
             "Search for employee",
@@ -394,6 +401,8 @@ if authentication_status:
                 departmentdata = departmentdata[departmentdata["dept_name"]== option]
                 st.header("Show Departments")
                 try:
+                        conn, cur = connection()
+
                         st.session_state.dfffff = departmentdata
 
                         departmentdata2 = st.data_editor(st.session_state.dfffff)
