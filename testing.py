@@ -22,10 +22,10 @@ image = Image.open('logo.jpeg')
 st.image(image)
 current_dateTime = datetime.now()
 menu_data = [
-        {'label':"View/Edit/Delete LEARNERID"},
-        {'label':"Add Employees"},
-        {'label':"Add/Edit/Delete Departments"},
-        # {'label':"Add/Edit Roles"},
+        {'label':"Manage Learner"},
+        {'label':"Manage Team Leader"},
+        {'label':"Manage Projects"},
+        {'label':"Manage Cohorts"},
         # {'label':"Add/Edit Skill"},
         # {'label':"Add/Edit Project"},
         # {'label':"View And Approve Leave"},
@@ -40,247 +40,295 @@ sn = []
 sln = []
 sid = []
 
-if choice=='View/Edit/Delete LEARNERID':
-    COHORT = st.selectbox(
-                "Select Cohort",
-                (['Data Science','UX/UI Design','Web Development']),
+if choice=='Manage Learner':
+    try:
+        COHORT = st.selectbox(
+                    "Select Cohort",
+                    (['Data Science','UX/UI Design','Web Development']),
+                    index=None,
+                    placeholder="Select cohort here...",
+                    )
+        URLCOHORT = "http://localhost:1337/api/applicants?filters[$and][0][Program][$contains]="+str(COHORT)
+        d = requests.get(URLCOHORT)
+        dd = d.json()
+        z = 0
+
+        for i in range(20):
+            sn.append(dd['data'][z]['attributes']['firstname'])
+            sln.append(dd['data'][z]['attributes']['lastname'])
+            sid.append(dd['data'][z]['id'])
+            z = z + 1
+            
+        deptss = pd.DataFrame(data=zip(sn,sln,sid),columns=['firstname','lastname','id'])
+        deptss['fullname'] = deptss['firstname'] + " " + deptss['lastname']
+        LEARNER = st.selectbox(
+                "Select a learner",
+                (deptss['fullname']),
                 index=None,
-                placeholder="Select cohort here...",
+                placeholder="Select learner here...",
                 )
-    URLCOHORT = "http://localhost:1337/api/applicants?filters[$and][0][Program][$contains]="+str(COHORT)
-    d = requests.get(URLCOHORT)
-    dd = d.json()
-    z = 0
+        Learn = deptss[deptss['fullname'] == LEARNER]
+        LEARNERID = Learn['id'].values
+    except:
+         st.write("Please select a cohort above")
 
-    for i in range(25):
-        sn.append(dd['data'][z]['attributes']['firstname'])
-        sln.append(dd['data'][z]['attributes']['lastname'])
-        sid.append(dd['data'][z]['id'])
-        z = z + 1
+
+    tab1, tab2, tab3, tab4, tab5= st.tabs(["Personal Details", "Contact Details", "Soft Skills Ratings","Technical Skills Ratings","Shaper Learner Review"  ])
+
+    with tab1:
+        try:
+            url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0])
+            d = requests.get(url)
+            dd = d.json()
+            st.session_state.dff = dd['data']['attributes']
+            x = pd.DataFrame(st.session_state.dff, index=[0])
+            edited_dff = st.data_editor(x[['firstname','lastname','homelanguage','dob','southafrican','male','idnumber','nextofkin']]) 
+            st.session_state.dff = edited_dff
         
-    deptss = pd.DataFrame(data=zip(sn,sln,sid),columns=['firstname','lastname','id'])
-    deptss['fullname'] = deptss['firstname'] + " " + deptss['lastname']
-    LEARNER = st.selectbox(
-            "Select LEARNERID",
-            (deptss['fullname']),
-            index=None,
-            placeholder="Select learner here...",
-            )
-tab1, tab2, tab3, tab4= st.tabs(["Personal Details", "Contact Details", "Soft Skills Ratings","Technical Skills Ratings" ])
-Learn = deptss[deptss['fullname'] == LEARNER]
-LEARNERID = Learn['id'].values
-st.write(LEARNERID[0])
-with tab1:
-    try:
-        url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0])
-        d = requests.get(url)
-        dd = d.json()
-        st.session_state.dff = dd['data']['attributes']
-        x = pd.DataFrame(st.session_state.dff, index=[0])
-        edited_dff = st.data_editor(x[['firstname','lastname','homelanguage','dob','southafrican','male','idnumber','nextofkin']]) 
-        st.session_state.dff = edited_dff
+            firstname = edited_dff['firstname'][0]
+            lastname = edited_dff['lastname'][0]
+            homelanguage = edited_dff['homelanguage'][0]
+            dob = edited_dff['dob'][0]
+            southafrican = edited_dff['southafrican'][0]
+            male = edited_dff['male'][0]
+            nextofkin = edited_dff['nextofkin'][0]
+            idnumber = edited_dff['idnumber'][0]
+
+            if st.button('Edit Personal Details'):
+
+                requests.put(
+                url,
+                headers={"Content-Type": "application/json"},
+                data=json.dumps(
+                    {
+                        "data": 
+                            {
+                                "firstname": firstname,
+                                "lastname": lastname,
+                                "dob": dob,
+                                "male": str(male),
+                                "southafrican": str(southafrican),
+                                "homelanguage": homelanguage,
+                                "nextofkin": nextofkin,
+                                "idnumber": idnumber,
+                            }
+                    }))
+        except:
+            st.write("Please select a learner")
+
+
+    with tab2:
+        try:
+            d = requests.get(url)
+            dd = d.json()
+            st.session_state.dff = dd['data']['attributes']
+            x = pd.DataFrame(st.session_state.dff, index=[0])
+            edited_dff = st.data_editor(x[['email','province','city','physicaladdress','postaladdress','nextofkin','postalcode','githublink', 'linkedinlink', 'nextofkinnumber']]) 
+            st.session_state.dff = edited_dff
     
-        firstname = edited_dff['firstname'][0]
-        lastname = edited_dff['lastname'][0]
-        homelanguage = edited_dff['homelanguage'][0]
-        dob = edited_dff['dob'][0]
-        southafrican = edited_dff['southafrican'][0]
-        male = edited_dff['male'][0]
-        nextofkin = edited_dff['nextofkin'][0]
-        idnumber = edited_dff['idnumber'][0]
+            email = edited_dff['email'][0]
+            province = edited_dff['province'][0]
+            city = edited_dff['city'][0]
+            physicaladdress = edited_dff['physicaladdress'][0]
+            postaladdress = edited_dff['postaladdress'][0]
+            nextofkin = edited_dff['nextofkin'][0]
+            postalcode = edited_dff['postalcode'][0]
+            githublink = edited_dff['githublink'][0]
+            linkedinlink = edited_dff['linkedinlink'][0]
+            nextofkinnumber = edited_dff['nextofkinnumber'][0]
 
-        if st.button('Edit Personal Details'):
-
-            requests.put(
-            url,
-            headers={"Content-Type": "application/json"},
-            data=json.dumps(
-                {
-                    "data": 
-                        {
-                            "firstname": firstname,
-                            "lastname": lastname,
-                            "dob": dob,
-                            "male": str(male),
-                            "southafrican": str(southafrican),
-                            "homelanguage": homelanguage,
-                            "nextofkin": nextofkin,
-                            "idnumber": idnumber,
-                        }
-                }))
-    except:
-         st.write("Please select a LEARNERID")
-
-
-with tab2:
+            if st.button('Edit Contact Details'):
+                requests.put(
+                url,
+                headers={"Content-Type": "application/json"},
+                data=json.dumps(
+                    {
+                        "data": 
+                            {
+                                "email": email,
+                                "province": province,
+                                "city": city,
+                                "physicaladdress": physicaladdress,
+                                "postaladdress": postaladdress,
+                                "nextofkin": nextofkin,
+                                "postalcode": str(postalcode),
+                                "githublink": githublink,
+                                "linkedinlink": linkedinlink,
+                                "nextofkinnumber": nextofkinnumber,
+                            }
+                    }))
+        except:
+            st.write("")
     try:
-        d = requests.get(url)
+        url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews"
+        d = requests.get(url2)
         dd = d.json()
-        st.session_state.dff = dd['data']['attributes']
-        x = pd.DataFrame(st.session_state.dff, index=[0])
-        edited_dff = st.data_editor(x[['email','province','city','physicaladdress','postaladdress','nextofkin','postalcode','githublink', 'linkedinlink', 'nextofkinnumber']]) 
-        st.session_state.dff = edited_dff
-   
-        email = edited_dff['email'][0]
-        province = edited_dff['province'][0]
-        city = edited_dff['city'][0]
-        physicaladdress = edited_dff['physicaladdress'][0]
-        postaladdress = edited_dff['postaladdress'][0]
-        nextofkin = edited_dff['nextofkin'][0]
-        postalcode = edited_dff['postalcode'][0]
-        githublink = edited_dff['githublink'][0]
-        linkedinlink = edited_dff['linkedinlink'][0]
-        nextofkinnumber = edited_dff['nextofkinnumber'][0]
-
-        if st.button('Edit Contact Details'):
-            requests.put(
-            url,
-            headers={"Content-Type": "application/json"},
-            data=json.dumps(
-                {
-                    "data": 
-                        {
-                            "email": email,
-                            "province": province,
-                            "city": city,
-                            "physicaladdress": physicaladdress,
-                            "postaladdress": postaladdress,
-                            "nextofkin": nextofkin,
-                            "postalcode": str(postalcode),
-                            "githublink": githublink,
-                            "linkedinlink": linkedinlink,
-                            "nextofkinnumber": nextofkinnumber,
-                        }
-                }))
     except:
-         st.write("dfvsfvd")
-url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings"
-d = requests.get(url2)
-dd = d.json()
+         st.write("")
 
-with tab3:
-    try:
-        if (len(dd['data']['attributes']['softskillratings']['data'][0]['attributes'])> 0):
-            id = dd['data']['attributes']['softskillratings']['data'][0]['id']
-            st.session_state.dff = dd['data']['attributes']['softskillratings']['data'][0]['attributes']
-            edited_dff = st.data_editor(st.session_state.dff)  
-            st.write(id)
+    with tab3:
+        try:
+            if (len(dd['data']['attributes']['softskillratings']['data'][0]['attributes'])> 0):
+                id = dd['data']['attributes']['softskillratings']['data'][0]['id']
+                st.session_state.dff = dd['data']['attributes']['softskillratings']['data'][0]['attributes']
+                edited_dff = st.data_editor(st.session_state.dff)  
 
-            problemsolving = edited_dff['problemsolving'][0]
-            interpersonal = edited_dff['interpersonal'][0]
-            teamwork =edited_dff['teamwork'][0]
-            communication =edited_dff['communication'][0]
-            leadership = edited_dff['leadership']
-            mostimproved = edited_dff['mostimproved']
+                problemsolving = edited_dff['problemsolving'][0]
+                interpersonal = edited_dff['interpersonal'][0]
+                teamwork =edited_dff['teamwork'][0]
+                communication =edited_dff['communication'][0]
+                leadership = edited_dff['leadership']
+                mostimproved = edited_dff['mostimproved']
 
-            if st.button('Edit Soft Skills Ratings'):
-                    ff = "http://localhost:1337/api/softskillratings/"+str(id)
-                    requests.put(
-                    ff,
-                    headers={"Content-Type": "application/json"},
-                    data=json.dumps(
-                        {
-                                "data": 
-                                {
-                                "applicants": str(LEARNERID),
-                                "problemsolving": problemsolving,
-                                "interpersonal": interpersonal,
-                                "communication": communication,
-                                "teamwork": teamwork,
-                                "leadership": leadership,
+                if st.button('Edit Soft Skills Ratings'):
+                        ff = "http://localhost:1337/api/softskillratings/"+str(id)
+                        requests.put(
+                        ff,
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                    "data": 
+                                    {
+                                    "applicants": str(LEARNERID[0]),
+                                    "problemsolving": problemsolving,
+                                    "interpersonal": interpersonal,
+                                    "communication": communication,
+                                    "teamwork": teamwork,
+                                    "leadership": leadership,
+                                    }
+                        }))
+        except:
+            with st.form("my_form"):
+                    problemsolving = st.number_input("Problem Solving:")
+                    interpersonal = st.number_input("Interpersonal:")
+                    communication = st.number_input("Communication:")
+                    teamwork = st.number_input("Team Work:")
+                    leadership = st.number_input("Leadership:")
+                    mostimproved = st.text_input("Most Improved Skill:")
+
+                    submitted = st.form_submit_button("Add Ratings")
+                    if submitted:
+
+                        requests.post(
+                        "http://localhost:1337/api/softskillratings/",
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                "data": {
+                                    "applicants": str(LEARNERID[0]),
+                                    "problemsolving": problemsolving,
+                                    "interpersonal": interpersonal,
+                                    "communication": teamwork,
+                                    "teamwork": communication,
+                                    "leadership": leadership,
                                 }
-                    }))
-    except:
-        with st.form("my_form"):
-                problemsolving = st.number_input("Problem Solving:")
-                interpersonal = st.number_input("Interpersonal:")
-                communication = st.number_input("Communication:")
-                teamwork = st.number_input("Team Work:")
-                leadership = st.number_input("Leadership:")
-                mostimproved = st.text_input("Most Improved Skill:")
-
-                submitted = st.form_submit_button("Add Ratings")
-                if submitted:
-
-                    requests.post(
-                    "http://localhost:1337/api/softskillratings/",
-                    headers={"Content-Type": "application/json"},
-                    data=json.dumps(
-                        {
-                            "data": {
-                                "applicants": str(LEARNERID[0]),
-                                "problemsolving": problemsolving,
-                                "interpersonal": interpersonal,
-                                "communication": teamwork,
-                                "teamwork": communication,
-                                "leadership": leadership,
                             }
-                        }
-                    ),
-                )
-                
-with tab4:     
-    try:
-        if (len(dd['data']['attributes']['techskillratings']['data'][0]['attributes'])> 0):
-            id = dd['data']['attributes']['techskillratings']['data'][0]['id']
-            st.session_state.dff1 = dd['data']['attributes']['techskillratings']['data'][0]['attributes']
-            edited_dff1 = st.data_editor(st.session_state.dff1)  
+                        ),
+                    )
+                    
+    with tab4:     
+        try:
+            if (len(dd['data']['attributes']['techskillratings']['data'][0]['attributes'])> 0):
+                id = dd['data']['attributes']['techskillratings']['data'][0]['id']
+                st.session_state.dff1 = dd['data']['attributes']['techskillratings']['data'][0]['attributes']
+                edited_dff1 = st.data_editor(st.session_state.dff1)  
 
-            skill1 = edited_dff1['skill1'][0]
-            skill2 = edited_dff1['skill2'][0]
-            skill3 =edited_dff1['skill3'][0]
-            skill4 =edited_dff1['skill4'][0]
-            skill5 = edited_dff1['skill5'][0]
-            mostimproved = edited_dff1['mostimproved'][0]
+                skill1 = edited_dff1['skill1'][0]
+                skill2 = edited_dff1['skill2'][0]
+                skill3 =edited_dff1['skill3'][0]
+                skill4 =edited_dff1['skill4'][0]
+                skill5 = edited_dff1['skill5'][0]
+                mostimproved = edited_dff1['mostimproved'][0]
 
-            if st.button('Edit Tech Skills Ratings'):
-                    ff = "http://localhost:1337/api/technicalskills/"+str(id)
-                    requests.put(
-                    ff,
-                    headers={"Content-Type": "application/json"},
-                    data=json.dumps(
-                        {
-                                "data": 
-                                
-                                {
-                                "applicants": str(LEARNERID[0]),
-                                "skill1": skill1,
-                                "skill2": skill2,
-                                "skill3": skill3,
-                                "skill4": skill4,
-                                "skill5": skill5,
+                if st.button('Edit Tech Skills Ratings'):
+                        ff = "http://localhost:1337/api/technicalskills/"+str(id)
+                        requests.put(
+                        ff,
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                    "data": 
+                                    
+                                    {
+                                    "applicants": str(LEARNERID[0]),
+                                    "skill1": skill1,
+                                    "skill2": skill2,
+                                    "skill3": skill3,
+                                    "skill4": skill4,
+                                    "skill5": skill5,
 
+                                    }
+                        }))
+        except:
+            with st.form("my_form2"):
+                    skill1 = st.number_input("Skill1:")
+                    skill2 = st.number_input("Skill2:")
+                    skill3 = st.number_input("Skill3:")
+                    skill4 = st.number_input("Skill4:")
+                    skill5 = st.number_input("Skill5:")
+                    mostimproved = st.text_input("Most Improved Skill:")
+
+                    submitted = st.form_submit_button("Add Ratings")
+                    if submitted:
+
+                        requests.post(
+                        "http://localhost:1337/api/technicalskills/",
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                "data": {
+                                    "applicants": str(LEARNERID[0]),
+                                    "skill1": skill1,
+                                    "skill2": skill2,
+                                    "skill3": skill3,
+                                    "skill4": skill4,
+                                    "skill5": skill5,
                                 }
-                    }))
-    except:
-        with st.form("my_form2"):
-                skill1 = st.number_input("Skill1:")
-                skill2 = st.number_input("Skill2:")
-                skill3 = st.number_input("Skill3:")
-                skill4 = st.number_input("Skill4:")
-                skill5 = st.number_input("Skill5:")
-                mostimproved = st.text_input("Most Improved Skill:")
-
-                submitted = st.form_submit_button("Add Ratings")
-                if submitted:
-
-                    requests.post(
-                    "http://localhost:1337/api/technicalskills/",
-                    headers={"Content-Type": "application/json"},
-                    data=json.dumps(
-                        {
-                            "data": {
-                                "applicants": str(LEARNERID[0]),
-                                "skill1": skill1,
-                                "skill2": skill2,
-                                "skill3": skill3,
-                                "skill4": skill4,
-                                "skill5": skill5,
                             }
-                        }
-                    ),
-                )
-                          
+                        ),
+                    )
+with tab5:     
+        try:
+            if (len(dd['data']['attributes']['shaperreviews']['data'][0]['attributes'])> 0):
+                id = dd['data']['attributes']['shaperreviews']['data'][0]['id']
+                st.session_state.dff1 = dd['data']['attributes']['shaperreviews']['data'][0]['attributes']
+                edited_dff1 = st.data_editor(st.session_state.dff1)  
+
+                review = edited_dff1['review']
+
+                if st.button('Edit Review'):
+                        ff = "http://localhost:1337/api/shaperreviews/"+str(id)
+                        requests.put(
+                        ff,
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                    "data": 
+                                    {
+                                    "learners": str(LEARNERID[0]),
+                                    "review": review,
+                                    }
+                        }))
+        except:
+            with st.form("my_form3"):
+                    review = st.text_input("Review:")
+
+                    submitted = st.form_submit_button("Add Review")
+                    if submitted:
+
+                        requests.post(
+                        "http://localhost:1337/api/shaperreviews/",
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                "data": {
+                                    "learners": str(LEARNERID[0]),
+                                    "review": review,
+                                }
+                            }
+                        ),
+                    )
+                     
 footer="""<style>
 a:link , a:visited{
 color: blue;
