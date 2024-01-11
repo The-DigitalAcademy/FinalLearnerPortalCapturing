@@ -2,35 +2,23 @@ import streamlit as st
 
 st.set_page_config(page_title="Employee Management Tool", page_icon=":bar_chart:", layout="wide")
 import json
-import pickle
-import random
-import re
 from datetime import datetime
-from pathlib import Path
-
 import hydralit_components as hc
-import numpy as np
-import pandas as pd  # pip install pandas openpyxl
-import psycopg2
+import pandas as pd  
 import requests
-import streamlit_authenticator as stauth  # pip install streamlit-authenticator
 from PIL import Image
-from psycopg2.extensions import AsIs
 from streamlit_option_menu import option_menu
 
 image = Image.open('logo.jpeg')
 st.image(image)
 current_dateTime = datetime.now()
+
+
 menu_data = [
         {'label':"Manage Learner"},
         {'label':"Manage Team Leader"},
         {'label':"Manage Projects"},
         {'label':"Manage Cohorts"},
-        # {'label':"Add/Edit Skill"},
-        # {'label':"Add/Edit Project"},
-        # {'label':"View And Approve Leave"},
-        # {'label':"Add Contact Details"},
-        # {'label':"Add Payment Details"},
     ]
 
 menu_id = hc.nav_bar(menu_definition=menu_data)
@@ -80,39 +68,46 @@ if choice=='Manage Learner':
             url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0])
             d = requests.get(url)
             dd = d.json()
-            st.session_state.dff = dd['data']['attributes']
-            x = pd.DataFrame(st.session_state.dff, index=[0])
-            edited_dff = st.data_editor(x[['firstname','lastname','homelanguage','dob','southafrican','male','idnumber','nextofkin']]) 
-            st.session_state.dff = edited_dff
-        
-            firstname = edited_dff['firstname'][0]
-            lastname = edited_dff['lastname'][0]
-            homelanguage = edited_dff['homelanguage'][0]
-            dob = edited_dff['dob'][0]
-            southafrican = edited_dff['southafrican'][0]
-            male = edited_dff['male'][0]
-            nextofkin = edited_dff['nextofkin'][0]
-            idnumber = edited_dff['idnumber'][0]
 
-            if st.button('Edit Personal Details'):
+            col1, col2, col3, col4 = st.columns(4)
+            with st.form("my_formyacdaswd"):
+                    with col1:
+                        firstname = st.text_input("Firstname:",dd['data']['attributes']['firstname'])
+                        lastname = st.text_input("Lastname:",dd['data']['attributes']['lastname'])
+                    with col2:
+                        homelanguage = st.text_input("Homelanguage:",dd['data']['attributes']['homelanguage'])
+                        from datetime import datetime
+                        dateofbirth = datetime.strptime(dd['data']['attributes']['dob'], '%Y-%m-%d').date()
+                        dob = st.date_input("Date of Birth:",dateofbirth)
+                    with col3:
+                        southafrican = st.text_input("Nationality:",dd['data']['attributes']['southafrican'])
+                        male = st.text_input("Gender:",dd['data']['attributes']['male'])
+                    with col4:
+                        nextofkin = st.text_input("Next of Kin:",dd['data']['attributes']['nextofkin'])
+                        idnumber = st.text_input("ID Number:",dd['data']['attributes']['idnumber'])
+                  
+                    submitted = st.form_submit_button("Edit Personal Details")
+    
 
-                requests.put(
-                url,
-                headers={"Content-Type": "application/json"},
-                data=json.dumps(
-                    {
-                        "data": 
+                    if submitted:
+
+                        requests.put(
+                        url,
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
                             {
-                                "firstname": firstname,
-                                "lastname": lastname,
-                                "dob": dob,
-                                "male": str(male),
-                                "southafrican": str(southafrican),
-                                "homelanguage": homelanguage,
-                                "nextofkin": nextofkin,
-                                "idnumber": idnumber,
-                            }
-                    }))
+                                "data": 
+                                    {
+                                        "firstname": firstname,
+                                        "lastname": lastname,
+                                        "dob": dob,
+                                        "male": str(male),
+                                        "southafrican": str(southafrican),
+                                        "homelanguage": homelanguage,
+                                        "nextofkin": nextofkin,
+                                        "idnumber": idnumber,
+                                    }
+                            }))
         except:
             st.write("Please select a learner")
 
@@ -120,42 +115,52 @@ if choice=='Manage Learner':
         try:
             d = requests.get(url)
             dd = d.json()
-            st.session_state.dff = dd['data']['attributes']
-            x = pd.DataFrame(st.session_state.dff, index=[0])
-            edited_dff = st.data_editor(x[['email','province','city','physicaladdress','postaladdress','nextofkin','postalcode','githublink', 'linkedinlink', 'nextofkinnumber']]) 
-            st.session_state.dff = edited_dff
-    
-            email = edited_dff['email'][0]
-            province = edited_dff['province'][0]
-            city = edited_dff['city'][0]
-            physicaladdress = edited_dff['physicaladdress'][0]
-            postaladdress = edited_dff['postaladdress'][0]
-            nextofkin = edited_dff['nextofkin'][0]
-            postalcode = edited_dff['postalcode'][0]
-            githublink = edited_dff['githublink'][0]
-            linkedinlink = edited_dff['linkedinlink'][0]
-            nextofkinnumber = edited_dff['nextofkinnumber'][0]
 
-            if st.button('Edit Contact Details'):
-                requests.put(
-                url,
-                headers={"Content-Type": "application/json"},
-                data=json.dumps(
-                    {
-                        "data": 
+            col1, col2, col3, col4 = st.columns(4)
+            with st.form("my_formyacdga"):
+                    with col1:
+                        city = st.text_input("City:",dd['data']['attributes']['city'])
+                        province = st.selectbox(
+                                            "Province:",
+                                            ("Gauteng", "North West", "Mpumalanga", "Free State","Limpopo",
+                                              "Northen Cape","Western Cape", "Eastern Cape", "KwaZulu Natal"),
+                                            index=None,
+                                            placeholder=dd['data']['attributes']['province'],
+                                            )
+                    with col2:
+                        physicaladdress = st.text_input("Physical Address:",dd['data']['attributes']['physicaladdress'])
+                        postaladdress = st.text_input("Postal Address:",dd['data']['attributes']['postaladdress'])
+                        postalcode = st.number_input("Postal Code:",dd['data']['attributes']['postalcode'])
+                    with col3:
+                        nextofkinnumber = st.text_input("Next of Kin Number:",dd['data']['attributes']['nextofkinnumber'])
+                        phonenumber = st.text_input("Phone Number:",dd['data']['attributes']['phonenumber'])
+                    with col4:
+                        email = st.text_input("Email:",dd['data']['attributes']['email'])
+                        githublink = st.text_input("Github Link:",dd['data']['attributes']['githublink'])
+                        linkedinlink = st.text_input("Linkedin Link:",dd['data']['attributes']['linkedinlink'])
+
+                    submitted = st.form_submit_button("Edit Contact Details")
+      
+                    if submitted:
+                        requests.put(
+                        url,
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
                             {
-                                "email": email,
-                                "province": province,
-                                "city": city,
-                                "physicaladdress": physicaladdress,
-                                "postaladdress": postaladdress,
-                                "nextofkin": nextofkin,
-                                "postalcode": str(postalcode),
-                                "githublink": githublink,
-                                "linkedinlink": linkedinlink,
-                                "nextofkinnumber": nextofkinnumber,
-                            }
-                    }))
+                                "data": 
+                                    {
+                                        "email": email,
+                                        "province": province,
+                                        "city": city,
+                                        "physicaladdress": physicaladdress,
+                                        "postaladdress": postaladdress,
+                                        "nextofkin": nextofkin,
+                                        "postalcode": str(postalcode),
+                                        "githublink": githublink,
+                                        "linkedinlink": linkedinlink,
+                                        "nextofkinnumber": nextofkinnumber,
+                                    }
+                            }))
         except:
             st.write("")
     try:
@@ -169,17 +174,46 @@ if choice=='Manage Learner':
         try:
             if (len(dd['data']['attributes']['softskillratings']['data'][0]['attributes'])> 0):
                 id = dd['data']['attributes']['softskillratings']['data'][0]['id']
-                st.session_state.dff = dd['data']['attributes']['softskillratings']['data'][0]['attributes']
-                edited_dff = st.data_editor(st.session_state.dff)  
+                
+                col1, col2, col3 = st.columns(3)
+                with st.form("my_formyes"):
+                    with col1:
+                        problemsolving = st.selectbox(
+                                            "Problem Solving:",
+                                            ('1','2','3','4','5'),
+                                            index=int(dd['data']['attributes']['softskillratings']['data'][0]['attributes']['problemsolving'])-1,
+                                            )
+                        interpersonal = st.selectbox(
+                                            "Interpersonal:",
+                                            ('1','2','3','4','5'),
+                                            index=int(dd['data']['attributes']['softskillratings']['data'][0]['attributes']['interpersonal'])-1,
+                                            )
+                    with col2:
+                        communication = st.selectbox(
+                                            "Communication:",
+                                            ('1','2','3','4','5'),
+                                            index=int(dd['data']['attributes']['softskillratings']['data'][0]['attributes']['communication'])-1,
+                                            )
+                        teamwork = st.selectbox(
+                                            "Team Work:",
+                                            ('1','2','3','4','5'),
+                                            index=int(dd['data']['attributes']['softskillratings']['data'][0]['attributes']['teamwork']) - 1,
+                                            )
+                    with col3:
 
-                problemsolving = edited_dff['problemsolving'][0]
-                interpersonal = edited_dff['interpersonal'][0]
-                teamwork =edited_dff['teamwork'][0]
-                communication =edited_dff['communication'][0]
-                leadership = edited_dff['leadership']
-                mostimproved = edited_dff['mostimproved']
+                        leadership = st.selectbox(
+                                            "Leadership:",
+                                            ('1','2','3','4','5'),
+                                            index=int(dd['data']['attributes']['softskillratings']['data'][0]['attributes']['leadership']) - 1,
+                                            )
+                        mostimproved = st.selectbox(
+                                            "Most Improved:",
+                                            ('communication','teamwork','leadership','interpersonal','problemsolving'),
+                                            placeholder=str(dd['data']['attributes']['softskillratings']['data'][0]['attributes']['mostimproved']),
+                                            )
+                    submitted = st.form_submit_button("Edit Ratings")
 
-                if st.button('Edit Soft Skills Ratings'):
+                    if submitted:
                         ff = "http://localhost:1337/api/softskillratings/"+str(id)
                         requests.put(
                         ff,
@@ -194,18 +228,24 @@ if choice=='Manage Learner':
                                     "communication": communication,
                                     "teamwork": teamwork,
                                     "leadership": leadership,
+                                    "mostimproved" : mostimproved
                                     }
                         }))
         except:
             with st.form("my_form"):
-                    problemsolving = st.number_input("Problem Solving:")
-                    interpersonal = st.number_input("Interpersonal:")
-                    communication = st.number_input("Communication:")
-                    teamwork = st.number_input("Team Work:")
-                    leadership = st.number_input("Leadership:")
-                    mostimproved = st.text_input("Most Improved Skill:")
+                    col1, col2, col3 = st.columns(3)
 
-                    submitted = st.form_submit_button("Add Ratings")
+                    with col1:
+                        problemsolving = st.number_input("Problem Solving:")
+                        interpersonal = st.number_input("Interpersonal:")
+                    with col2:
+                        communication = st.number_input("Communication:")
+                        teamwork = st.number_input("Team Work:")
+                    with col3:
+                        leadership = st.number_input("Leadership:")
+                        mostimproved = st.text_input("Most Improved Skill:")
+
+                        submitted = st.form_submit_button("Add Ratings")
                     if submitted:
 
                         requests.post(
@@ -229,25 +269,29 @@ if choice=='Manage Learner':
         try:
             if (len(dd['data']['attributes']['techskillratings']['data'][0]['attributes'])> 0):
                 id = dd['data']['attributes']['techskillratings']['data'][0]['id']
-                st.session_state.dff1 = dd['data']['attributes']['techskillratings']['data'][0]['attributes']
-                edited_dff1 = st.data_editor(st.session_state.dff1)  
 
-                skill1 = edited_dff1['skill1'][0]
-                skill2 = edited_dff1['skill2'][0]
-                skill3 =edited_dff1['skill3'][0]
-                skill4 =edited_dff1['skill4'][0]
-                skill5 = edited_dff1['skill5'][0]
-                mostimproved = edited_dff1['mostimproved'][0]
+                col1, col2, col3 = st.columns(3)
+                with st.form("my_formx"):
+                    with col1:
+                        skill1 = st.number_input("Skill1:",dd['data']['attributes']['techskillratings']['data'][0]['attributes']['skill1'])
+                        skill2 = st.number_input("Skill2:",dd['data']['attributes']['techskillratings']['data'][0]['attributes']['skill2'])
+                    with col2:
+                        skill3 = st.number_input("Skill3:",dd['data']['attributes']['techskillratings']['data'][0]['attributes']['skill3'])
+                        skill4 = st.number_input("Skill4:",dd['data']['attributes']['techskillratings']['data'][0]['attributes']['skill4'])
+                    with col3:
+                        skill5 = st.number_input("Skill5:",dd['data']['attributes']['techskillratings']['data'][0]['attributes']['skill5'])
+                        mostimproved = st.text_input("Most Improved:",dd['data']['attributes']['techskillratings']['data'][0]['attributes']['mostimproved'])
 
-                if st.button('Edit Tech Skills Ratings'):
+                    submitted = st.form_submit_button("Edit Ratings")
+
+                    if submitted:
                         ff = "http://localhost:1337/api/technicalskills/"+str(id)
                         requests.put(
                         ff,
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
-                                    "data": 
-                                    
+                                    "data":          
                                     {
                                     "applicants": str(LEARNERID[0]),
                                     "skill1": skill1,
@@ -255,17 +299,21 @@ if choice=='Manage Learner':
                                     "skill3": skill3,
                                     "skill4": skill4,
                                     "skill5": skill5,
-
                                     }
                         }))
         except:
             with st.form("my_form2"):
-                    skill1 = st.number_input("Skill1:")
-                    skill2 = st.number_input("Skill2:")
-                    skill3 = st.number_input("Skill3:")
-                    skill4 = st.number_input("Skill4:")
-                    skill5 = st.number_input("Skill5:")
-                    mostimproved = st.text_input("Most Improved Skill:")
+                    col1, col2, col3 = st.columns(3)
+                    
+                    with col1:
+                        skill1 = st.number_input("Skill1:")
+                        skill2 = st.number_input("Skill2:")
+                    with col2:
+                        skill3 = st.number_input("Skill3:")
+                        skill4 = st.number_input("Skill4:")
+                    with col3:
+                        skill5 = st.number_input("Skill5:")
+                        mostimproved = st.text_input("Most Improved Skill:")
 
                     submitted = st.form_submit_button("Add Ratings")
                     if submitted:
@@ -290,12 +338,13 @@ if choice=='Manage Learner':
         try:
             if (len(dd['data']['attributes']['shaperreviews']['data'][0]['attributes'])> 0):
                 id = dd['data']['attributes']['shaperreviews']['data'][0]['id']
-                st.session_state.dff1 = dd['data']['attributes']['shaperreviews']['data'][0]['attributes']
-                edited_dff1 = st.data_editor(st.session_state.dff1)  
+            
+                with st.form("my_formss"):
+                    review = st.text_input("Shaper Review:",dd['data']['attributes']['shaperreviews']['data'][0]['attributes']['review'])
+                    
+                    submitted = st.form_submit_button("Edit Review")
 
-                review = edited_dff1['review']
-
-                if st.button('Edit Review'):
+                if submitted:
                         ff = "http://localhost:1337/api/shaperreviews/"+str(id)
                         requests.put(
                         ff,
@@ -394,6 +443,8 @@ if choice=='Manage Team Leader':
                                 "teams": teams,
                             }
                     }))
+            if st.button("Delete This Team Leader"):
+                requests.delete(url)
         except:
             st.write("Please select a Team Leader")
     with tab2:
@@ -416,7 +467,6 @@ if choice=='Manage Team Leader':
                         ),
                     )
 
-                   
 if choice=='Manage Projects':
     try:
         URLPROJECT = "http://localhost:1337/api/projects"
@@ -470,7 +520,6 @@ if choice=='Manage Projects':
             
             imageurl_.append(dd['data'][z]['attributes']['imageurl'])
             z = z + 1
-            
 
         deptss = pd.DataFrame(data=zip(projectname_,problemstatement_,solution_,screenshot1explanation_,
                                        screenshot2explanation_,screenshot3explanation_,screenshot4explanation_,
@@ -494,9 +543,7 @@ if choice=='Manage Projects':
     except:
          st.write("Please Select a projects Above")
 
-
     tab1, tab2 = st.tabs(["Manage Project", "Add Project" ])
-
     with tab1:
         try:
             url = "http://localhost:1337/api/projects/" + str(PROJECTID[0]) + "?populate=teams"
@@ -559,12 +606,14 @@ if choice=='Manage Projects':
                                 'screenshot7_image' : screenshot1_image
                             }
                     }))
+            if st.button("Delete This Project"):
+                requests.delete(url)
         except:
             st.write("Please select a project")
     with tab2:
          with st.form("my_form6"):
-                    projectname = st.text_input("projectname:")
-                    problemstatement = st.text_input("problemstatement:")
+                    projectname = st.text_input("Project Name:")
+                    problemstatement = st.text_input("Problem Statement:")
 
                     submitted = st.form_submit_button("Add a Project")
                     if submitted:
@@ -579,7 +628,150 @@ if choice=='Manage Projects':
                                 }
                             }
                         ),
-                    )                     
+                    )    
+
+if choice=='Manage Cohorts':
+    try:
+        URLCOHORT = "http://localhost:1337/api/cohorts"
+        d = requests.get(URLCOHORT)
+        dd = d.json()
+        z = 0
+        name_=[]
+        tid=[]
+        sid_=[]
+        teams_ = []
+        description_=[]
+        skill1_ = []
+        skill2_= []
+        skill3_ = []
+        skill4_ = []
+        skill5_ = []
+        skill6_ = []
+        skill7_ = []      
+        skill1_icon_ = []
+        skill2_icon_= []
+        skill3_icon_ = []
+        skill4_icon_ = []
+        skill5_icon_ = []
+        skill6_icon_ = []
+        skill7_icon_ = []       
+
+        for i in range(len(dd['data'])):
+            name_.append(dd['data'][z]['attributes']['name'])
+            description_.append(dd['data'][z]['attributes']['description'])
+            sid_.append(dd['data'][z]['id'])
+            
+            skill1_.append(dd['data'][z]['attributes']['skill1'])
+            skill2_.append(dd['data'][z]['attributes']['skill2'])
+            skill3_.append(dd['data'][z]['attributes']['skill3'])
+            skill4_.append(dd['data'][z]['attributes']['skill4'])
+            skill5_.append(dd['data'][z]['attributes']['skill5'])
+            skill6_.append(dd['data'][z]['attributes']['skill6'])
+            skill7_.append(dd['data'][z]['attributes']['skill7'])
+            skill1_icon_.append(dd['data'][z]['attributes']['skill1_icon'])
+            skill2_icon_.append(dd['data'][z]['attributes']['skill2_icon'])
+            skill3_icon_.append(dd['data'][z]['attributes']['skill3_icon'])
+            skill4_icon_.append(dd['data'][z]['attributes']['skill4_icon'])
+            skill5_icon_.append(dd['data'][z]['attributes']['skill5_icon'])
+            skill6_icon_.append(dd['data'][z]['attributes']['skill6_icon'])
+            skill7_icon_.append(dd['data'][z]['attributes']['skill7_icon'])
+            z = z + 1
+            
+        deptss = pd.DataFrame(data=zip(name_,description_,skill1_,skill2_,skill3_,skill4_,skill5_,skill6_,skill7_,
+                                       skill1_icon_,skill2_icon_,skill3_icon_,skill4_icon_,
+                                       skill5_icon_,skill6_icon_,skill7_icon_,sid_),columns=['name','description','skill1','skill2',
+                                       'skill3','skill4','skill5','skill6','skill7',
+                                       'skill1_icon','skill2_icon','skill3_icon','skill4_icon',
+                                       'skill5_icon','skill6_icon','skill7_icon','id'])
+        
+        COHORT = st.selectbox(
+                "Select a Cohort",
+                (deptss),
+                index=None,
+                placeholder="Select cohort here...",
+                )
+        Learn = deptss[deptss['name'] == COHORT]
+        COHORTID = Learn['id'].values
+    except:
+         st.write("Please Select a Cohort")
+
+    tab1, tab2 = st.tabs(["Manage Cohort", "Add New Cohort" ])
+    with tab1:
+        try:
+            url = "http://localhost:1337/api/cohorts/" + str(COHORTID[0]) + "?populate=teams"
+            d = requests.get(url)
+            dd = d.json()
+
+            col1, col2, col3 = st.columns(3)
+            with st.form("my_formx"):
+                    with col1:
+                        name = st.text_input("name:",dd['data']['attributes']['name'])
+                        description = st.text_input("description:",dd['data']['attributes']['description'])
+                        teams = st.text_input("teams:",dd['data']['attributes']['teams'])
+
+                    with col2:
+                        skill1 = st.text_input("Skill1:",dd['data']['attributes']['skill1'])
+                        skill2 = st.text_input("Skill2:",dd['data']['attributes']['skill2'])
+                        skill3 = st.text_input("skill3:",dd['data']['attributes']['skill3'])
+                        skill4 = st.text_input("Skill2:",dd['data']['attributes']['skill4'])
+                        skill5 = st.text_input("skill3:",dd['data']['attributes']['skill5'])
+                    with col3:
+                        skill1_icon = st.text_input("skill1_icon:",dd['data']['attributes']['skill1_icon'])
+                        skill2_icon = st.text_input("skill2_icon:",dd['data']['attributes']['skill2_icon'])
+                        skill3_icon = st.text_input("skill3_icon:",dd['data']['attributes']['skill3_icon'])
+                        skill4_icon = st.text_input("skill4_icon:",dd['data']['attributes']['skill4_icon'])
+                        skill5_icon = st.text_input("skill5_icon:",dd['data']['attributes']['skill5_icon'])
+
+                    submitted = st.form_submit_button("Edit Ratings")
+
+                    if submitted:
+                        st.write(teams)
+                        requests.put(
+                        url,
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                "data": 
+                                    {
+                                        "name": name,
+                                        "description": description,
+                                        'skill1' : skill1,
+                                        'skill2' : skill2,
+                                        'skill3' : skill3,
+                                        'skill4' : skill4,
+                                        'skill5' : skill5,
+                                  
+                                        'skill1_icon' : skill1_icon,
+                                        'skill2_icon' : skill2_icon,
+                                        'skill3_icon' : skill3_icon,
+                                        'skill4_icon' : skill4_icon,
+                                        'skill5_icon' : skill5_icon,
+                                    }
+                            }))
+                    if st.button("Delete This Cohort"):
+                        requests.delete(url)
+        except:
+            st.write("Please select a cohort")
+    with tab2:
+         with st.form("my_form7"):
+                    name = st.text_input("Cohort Name:")
+                    description = st.text_input("Description:")
+
+                    submitted = st.form_submit_button("Add Cohort")
+                    if submitted:
+                        requests.post(
+                        "http://localhost:1337/api/cohorts/",
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                "data": {
+                                    "name": name,
+                                    "description": description,
+                                }
+                            }
+                        ),
+                    )
+                 
 footer="""<style>
 a:link , a:visited{
 color: blue;
@@ -607,420 +799,4 @@ text-align: center;
 <p>Developed with ❤ by <a style='display: block; text-align: center;' href="https://www.shaper.co.za/" target="_blank">Shaper Devs</a></p>
 </div>
 """
-# def connection():
-#     conn = psycopg2.connect(database="ems_app",
-#         host="localhost",
-#         user="postgres",
-#         password="",
-#         port="5436")
-#     cursor = conn.cursor()
-#     return cursor, conn
-
-# # --- USER AUTHENTICATION ---
-
-
-# # load hashed passwords
-# file_path = Path(__file__).parent / "hashed_pw.pkl"
-# with file_path.open("rb") as file:
-#     hashed_passwords = pickle.load(file)
-# credentials = {"usernames":{}}
-
-# for uname,name,pwd in zip(usernames,names,hashed_passwords):
-#     user_dict = {"name": name, "password": pwd}
-#     credentials["usernames"].update({uname: user_dict})
-        
-# authenticator = stauth.Authenticate(credentials, "cokkie_name", "random_key", cookie_expiry_days=30)
-
-# name, authentication_status, username = authenticator.login("Login", "main")
-
-# if authentication_status == False:
-#     st.error("Username/Password is incorrect")
-
-# if authentication_status == None:
-#     st.warning("Please enter your username and password")
-
-# if authentication_status:
-    
-#     st.image(image)
-#     menu_data = [
-#         {'label':"View/Edit/Delete Employee"},
-#         {'label':"Add Employees"},
-#         {'label':"Add/Edit/Delete Departments"},
-#         {'label':"Add/Edit Roles"},
-#         {'label':"Add/Edit Skill"},
-#         {'label':"Add/Edit Project"},
-#         {'label':"View And Approve Leave"},
-#         {'label':"Add Contact Details"},
-#         {'label':"Add Payment Details"},
-#     ]
-
-#     menu_id = hc.nav_bar(menu_definition=menu_data)
-
-#     choice = menu_id
-
-#     if choice=='View/Search Employee':
-#         try:
-#             conn, cur = connection()
-#             conn.execute("SELECT id, dept_name FROM departments")
-#             deptss = conn.fetchall()
-#             deptss =  pd.DataFrame(deptss, columns=['id','name'])
-        
-#             COHORT = st.selectbox(
-#             "Select department",
-#             (deptss['name']),
-#             index=None,
-#             placeholder="Select department here...",
-#             )
-#             conn.close()
-#         except:
-#             st.write("Please make sure that you select a user")
-#             st.stop()
-            
-#         try:
-#             conn, cur = connection()
-#             conn.execute("SELECT id, firstname, lastname , male, idnumber FROM employees")
-#             ddd = conn.fetchall()
-#             personal =  pd.DataFrame(ddd, columns=['id','firstname','lastname','male','idnumber'])
-#             personal['fullname'] = personal['firstname'] + " " + personal['lastname']
-#             conn.close()
-#         except:
-#             st.write("Please make sure that you select a user")
-#             st.stop()
-
-#         option = st.selectbox(
-#         "Search for employee",
-#         (personal['fullname']),
-#         index=None,
-#         placeholder="type employee name...",
-#         )
-#         tab1, tab2, tab3, tab4= st.tabs(["Personal Details", "Contact Details", "Educational Details","Dependants Details" ])
-
-#         with tab1:
-                                
-#                 if option:
-#                     st.header("Personal Details")
-#                     try:
-#                         st.session_state.dff = personal
-#                         edited_dff = st.data_editor(st.session_state.dff)
-#                         st.write(edited_dff['id'][0])
-#                         st.session_state.dff = edited_dff
-
-#                         id = edited_dff['id'][0]
-#                         fn = edited_dff['firstname'][0]
-#                         ln =edited_dff['lastname'][0]
-#                         male =edited_dff['male'][0]
-#                         idnumber = edited_dff['idnumber'].astype(np.int64)
-                        
-#                         conn, cur = connection()
-#                         conn.execute("UPDATE employees SET firstname=%s, lastname=%s, male=%s, idnumber=%s  where id = %s", (fn,ln,bool(male),int(idnumber), int(id)))
-#                         cur.commit()
-                      
-#                         st.write('df at end:',ln)
-#                         if st.button("delete"):
-#                             conn.execute("DELETE FROM employees where id = %s",(int(id),))
-#                             cur.commit()
-#                         conn.close()
-                        
-#                     except:
-#                         st.write(int(id))
-#                         st.stop()
-
-#         with tab2:
-#             st.header("Contact Details")
-                                
-#             try:
-#                 conn, cur = connection()
-#                 conn.execute("SELECT id, physicaladdress, postaladdress , phonenumber, email, postalcode FROM employee_contacts where id = %s", (int(id),))
-#                 ccc = conn.fetchall()
-#                 contacts =  pd.DataFrame(ccc, columns=['id', 'physicaladdress', 'postaladdress' , 'phonenumber', 'email', 'postalcode'])
-             
-#                 st.session_state.dfff = contacts
-
-#                 edited_dfff = st.data_editor(st.session_state.dfff)
-#                 st.write(edited_dfff['id'][0])
-#                 st.session_state.dfff = edited_dfff
-
-#                 id = edited_dfff['id'][0]
-#                 pa = edited_dfff['physicaladdress'][0]
-#                 poa =edited_dfff['postaladdress'][0]
-#                 phone =edited_dfff['phonenumber'][0]
-#                 email = edited_dfff['email'][0]
-                
-#                 conn.execute("UPDATE employee_contacts SET physicaladdress=%s, postaladdress=%s,phonenumber=%s, email=%s  where id = %s", (pa,poa,int(phone),email,int(id))
-#                 cur.commit()
-
-#                 if st.button("deletion"):
-#                     conn.execute("DELETE FROM employee_contacts where id = %s", int(id))
-#                     cur.commit()
-#                 conn.close()
-                                                
-#             except:
-#                 st.write("Please make sure that you select a user")
-#                 st.stop()
-
-#         with tab3:
-#             st.header("Educational Details")
-                                      
-
-#         with tab4:
-#             st.header("Dependants Details")
-
-                            
-
-        
-#     elif choice=='Add Employees':
-                            
-#                 #  st.button("Add"):
-#                 with st.form("my_form"):
-#                     try:
-#                         conn, cur = connection()
-#                         conn.execute("SELECT id, name FROM roleees")
-#                         roleesoption = conn.fetchall()
-#                         roleesoption =  pd.DataFrame(roleesoption, columns=['id','name'])
-#                         conn.close()
-#                     except:
-#                         st.write("Something wrong with reading roleees tables")
-#                         st.stop()
-#                     try:
-#                         conn, cur = connection()
-#                         conn.execute("SELECT id, dept_name FROM departments")
-#                         deptoption = conn.fetchall()
-#                         deptoption =  pd.DataFrame(deptoption, columns=['id','dept_name'])
-#                         conn.close()
-#                     except:
-#                         st.write("Something wrong with reading departments tables")
-#                         st.stop()
-#                     try:
-#                         conn, cur = connection()
-#                         conn.execute("SELECT id, skill_name FROM skills")
-#                         skilllsoption = conn.fetchall()
-#                         skilllsoption =  pd.DataFrame(skilllsoption, columns=['id','skill_name'])
-#                         conn.close()
-#                     except:
-#                         st.write("Something wrong with reading roleees tables")
-#                         st.stop()
-                        
-#                     col1, col2, col3, col4,col5 = st.columns(5)
-
-#                     with col1:
-#                         st.header("Personal Info")
-#                         fn = st.text_input("Firstname:")
-#                         ln = st.text_input("Lastname:")
-#                         initials = st.text_input("Initials:")
-#                         gender = st.selectbox('Please Select Gender:',
-#                                               ('Male', 'Female')) 
-#                         if gender =='Male':
-#                             genderid = True
-#                         idnumber = st.text_input("ID Number:")
-                        
-#                     with col2:
-#                         st.header("Contact Details")
-#                         physicaladd = st.text_area("Postal Address")
-#                         postaladd = st.text_area("Postal Address:")
-#                         phone = st.text_input("Phone Number:")
-#                         email = st.text_input("Email:")
-#                         postalcode = st.text_input("Postal Code:")
-#                     with col3:
-#                         st.header("Qualification")
-#                         qualification  = st.text_input("Qualification")
-#                         level = st.text_input("Level:")
-#                         dateobtained = st.date_input("When did you Obtain this?")
-#                     with col4:
-#                         st.header("Dept/Role/Skill")
-#                         role = st.selectbox('Please Select Role Below:',
-#                                               (roleesoption['name']))
-                        
-#                         skill  = st.selectbox('Please Select Skill Below:',
-#                                               (skillsoption['skill_name']))
-
-#                         department  = st.selectbox('Please Select Department Below:',
-#                                               (deptoption['dept_name']))
-                    
-
-#                     with col5:
-#                         st.header("Dependants")
-#                         Dependant  = st.text_input("Dependant:")   
-#                         genderD  = st.selectbox('Please Select Gender Below:',
-#                                               ('Male', 'Female'))    
-#                         if genderD =='Male':
-#                             genderDid = True           
-#                         relationship  = st.selectbox('Please Select Relationship Below:',
-#                                               ('Spouse', 'Parent', 'Sibling'))    
-#                         if relationship =='Spouse':
-#                             relationshipid = 1            
-#                         phonenumber  = st.text_input("Contact Number:")                    
-
-#                         def validate_email(email):  
-#                             if re.match(r"[^@]+@[^@]+\.[^@]+", email):  
-#                                 return True  
-#                             return st.write("Please make sure email is valid")
-    
-#                         validate_email(email)
-
-#                 # Every form must have a submit button.
-#                     submitted = st.form_submit_button("Submit")
-#                     if submitted:
-#                         cc = 1
-#                         conn, cur = connection()
-#                         conn.execute("INSERT into employees(firstname, lastname, initials,male, idnumber, created_at, updated_at, published_at, created_by_id, updated_by_id) VALUES (%s, %s,%s, %s, %s, %s, %s, %s, %s, %s )", (fn,ln, initials,genderid, idnumber,current_dateTime,current_dateTime,current_dateTime,cc,cc))
-#                         cur.commit()
-
-#                         conn.execute("SELECT id from employees where firstname=%s AND lastname=%s", (fn,ln))
-#                         ccc = conn.fetchall()
-#                         employee =  pd.DataFrame(ccc, columns=['id'])
-#                         employeeid = employee['id'][0]
-
-#                         conn.execute("INSERT into employee_contacts(physicaladdress, postaladdress, phonenumber,email, postalcode, created_at, updated_at, published_at, created_by_id, updated_by_id) VALUES (%s, %s,%s, %s, %s, %s, %s, %s, %s, %s )", (physicaladd,postaladd, phone,email, postalcode,current_dateTime,current_dateTime,current_dateTime,cc,cc))
-#                         cur.commit()
-
-#                         conn.execute("SELECT id from employee_contacts where physicaladdress=%s AND phonenumber=%s", (physicaladd,phone))
-#                         ccc = conn.fetchall()
-#                         employee_contacts =  pd.DataFrame(ccc, columns=['id'])
-#                         contactid = employee_contacts['id'][0]
-
-#                         conn.execute("INSERT into employees_employee_contacts_links(employee_id,employee_contact_id,employee_contact_order, employee_order) VALUES (%s, %s, %s, %s )", (int(employeeid),int(contactid), int(contactid),int(contactid)))
-#                         cur.commit()
-
-#                         conn.execute("INSERT into educations(qualification, level, dateobtained, created_at, updated_at, published_at, created_by_id, updated_by_id) VALUES (%s, %s,%s, %s, %s, %s, %s, %s )", (qualification,level, dateobtained,current_dateTime,current_dateTime,current_dateTime,cc,cc))
-#                         cur.commit()
-
-#                         conn.execute("SELECT id from educations where qualification=%s AND dateobtained=%s", (qualification,dateobtained))
-#                         ccc = conn.fetchall()
-#                         education =  pd.DataFrame(ccc, columns=['id'])
-#                         educationid = education['id'][0]
-
-
-#                         conn.execute("INSERT into employees_educations_links(employee_id, education_id,education_order, employee_order) VALUES (%s, %s,%s, %s)", (int(employeeid),int(educationid), int(educationid),int(educationid)))
-#                         cur.commit()
-
-#                         conn.execute("INSERT into dependants(name, relationship, phonenumber, male, created_at, updated_at, published_at, created_by_id, updated_by_id) VALUES (%s, %s,%s, %s, %s, %s, %s, %s, %s )", (Dependant,relationship, phonenumber,genderDid,current_dateTime,current_dateTime,current_dateTime,cc,cc))
-#                         cur.commit()
-
-#                         conn.execute("SELECT id from dependants where name=%s AND phonenumber=%s", (Dependant,phonenumber))
-#                         ccc = conn.fetchall()
-#                         dependants =  pd.DataFrame(ccc, columns=['id'])
-#                         dependantsid = dependants['id'][0]
-
-
-#                         conn.execute("INSERT into employees_dependants_links(employee_id, dependant_id,dependant_order, employee_order) VALUES (%s, %s,%s, %s )", (int(employeeid), int(dependantsid), int(dependantsid),int(dependantsid)))
-#                         cur.commit()
-
-#                         # conn.execute("INSERT into roleees(name, description, created_at, updated_at, published_at, created_by_id, updated_by_id) VALUES (%s, %s,%s, %s, %s, %s, %s )", (name,description, phonenumber,genderDid,current_dateTime,current_dateTime,current_dateTime,cc,cc))
-
-#                         conn.execute("SELECT id from roleees where name=%s ", (role,))
-#                         ccc = conn.fetchall()
-#                         roles =  pd.DataFrame(ccc, columns=['id'])
-#                         roleeeid = roles['id'][0]
-
-
-#                         conn.execute("INSERT into employees_rolees_links(employee_id, roleee_id,roleee_order, employee_order) VALUES (%s, %s,%s, %s )", (int(employeeid), int(roleeeid), int(roleeeid),int(roleeeid)))
-#                         cur.commit()
-
-#                         conn.execute("SELECT id from departments where dept_name=%s ", (department,))
-#                         ccc = conn.fetchall()
-#                         depts =  pd.DataFrame(ccc, columns=['id'])
-#                         deptid = depts['id'][0]
-
-
-#                         conn.execute("INSERT into departments_employees_links(employee_id, department_id,department_order, employee_order) VALUES (%s, %s,%s, %s )", (int(employeeid), int(deptid), int(deptid),int(deptid)))
-#                         cur.commit()
-                  
-            
-#     elif choice=='Add/Edit Departments':
-            
-#             with st.form("my_form"):
-#                 dept_name = st.text_input("Department Name:")
-#                 description = st.text_input("Description:")
-#             # Every form must have a submit button.
-#                 submitted = st.form_submit_button("Submit")
-#                 if submitted:
-#                     try:
-#                         cc = 1
-#                         conn, cur = connection()
-#                         conn.execute("INSERT into departments(dept_name, description, created_at, updated_at, published_at, created_by_id, updated_by_id) VALUES (%s, %s,%s, %s, %s, %s, %s )", (dept_name,description,current_dateTime,current_dateTime,current_dateTime,cc,cc))
-#                         cur.commit()
-#                         conn.close()
-#                     except:
-#                         st.write("Something wrong with inserting into departmments tables")
-#                         st.stop()
-                        
-#             try:
-#                 conn, cur = connection()
-#                 conn.execute("SELECT id, dept_name, description FROM departments")
-#                 ddd = conn.fetchall()
-#                 conn.close()
-#             except:
-#                     st.write("Something wrong with selecting from the departmments tables")
-#                     st.stop()
-                
-#             departmentdata =  pd.DataFrame(ddd, columns=['id','dept_name','description'])
-#             option = st.selectbox(
-#             "Search for employee",
-#             (departmentdata['dept_name']),
-#             index=None,
-#             placeholder="type employee name...",
-#             )
-#             if option:
-#                 departmentdata = departmentdata[departmentdata["dept_name"]== option]
-#                 st.header("Show Departments")
-#                 try:
-#                         conn, cur = connection()
-
-#                         st.session_state.dfffff = departmentdata
-
-#                         departmentdata2 = st.data_editor(st.session_state.dfffff)
-#                         st.write(departmentdata2['dept_name'][0])
-#                         st.session_state.dfffff = departmentdata2
-
-#                         id = departmentdata2['id'][0]
-#                         dn = departmentdata2['dept_name'][0]
-#                         ddesc =departmentdata2['description'][0]
-
-#                         conn.execute("UPDATE departments SET dept_name=%s, description=%s  where id = %s", (dn,ddesc, int(id)))
-#                         cur.commit()
-                      
-#                         st.write('df at end:',id)
-
-#                         if st.button("deletess"):
-#                             conn.execute("DELETE FROM departments where id = %s",(int(id),))
-#                             cur.commit()
-
-#                         conn.close()
-                        
-#                 except:
-#                         st.write(int(id))
-#                         st.stop()
-        
-
-#     elif choice=='Add/Edit Roles':
-#             with st.form("my_form"):
-#                 role = st.text_input("Role Name:")
-#                 description = st.text_input("Description:")
-#             # Every form must have a submit button.
-#                 submitted = st.form_submit_button("Submit")
-#                 if submitted:
-#                     cc = 1
-#                     conn, cur = connection()
-#                     conn.execute("INSERT into roleees(name, description, created_at, updated_at, published_at, created_by_id, updated_by_id) VALUES (%s, %s,%s, %s, %s, %s, %s )", (role,description,current_dateTime,current_dateTime,current_dateTime,cc,cc))
-#                     cur.commit()
-#                     conn.close()
-
-#     elif choice=='Add Skill':
-#             with st.form("my_form"):
-#                 fn = st.text_input("Team Name:")
-#                 ln = st.text_input("Description:")
-
-#                 # Every form must have a submit button.
-#                 submitted = st.form_submit_button("submit")
-
-
-#     elif choice=='Add Project':
-#             with st.form("my_form"):
-#                 fn = st.text_input("Team Name:")
-#                 ln = st.text_input("Description:")
-
-#                 # Every form must have a submit button.
-#                 submitted = st.form_submit_button("submit")
-
-    
 st.markdown(footer,unsafe_allow_html=True)
