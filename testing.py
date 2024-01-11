@@ -116,7 +116,6 @@ if choice=='Manage Learner':
         except:
             st.write("Please select a learner")
 
-
     with tab2:
         try:
             d = requests.get(url)
@@ -287,7 +286,7 @@ if choice=='Manage Learner':
                             }
                         ),
                     )
-with tab5:     
+    with tab5:     
         try:
             if (len(dd['data']['attributes']['shaperreviews']['data'][0]['attributes'])> 0):
                 id = dd['data']['attributes']['shaperreviews']['data'][0]['id']
@@ -328,7 +327,259 @@ with tab5:
                             }
                         ),
                     )
-                     
+                        
+if choice=='Manage Team Leader':
+    try:
+        
+        URLLEADER = "http://localhost:1337/api/teamleaders"
+        d = requests.get(URLLEADER)
+        dd = d.json()
+        z = 0
+        sn=[]
+        tid=[]
+        sid=[]
+        sln=[]
+
+        for i in range(len(dd['data'])):
+            sn.append(dd['data'][z]['attributes']['firstname'])
+            sln.append(dd['data'][z]['attributes']['lastname'])
+            sid.append(dd['data'][z]['id'])
+            z = z + 1
+            
+        deptss = pd.DataFrame(data=zip(sn,sln,sid),columns=['firstname','lastname','id'])
+        deptss['fullname'] = deptss['firstname'] + " " + deptss['lastname']
+
+        LEADER = st.selectbox(
+                "Select a Team Leader",
+                (deptss['fullname']),
+                index=None,
+                placeholder="Select learner here...",
+                )
+        Learn = deptss[deptss['fullname'] == LEADER]
+        LEADERID = Learn['id'].values
+    except:
+         st.write("Please Select a Team Leader Above")
+
+
+    tab1, tab2 = st.tabs(["Manage Team Leader", "Add Team Leader" ])
+
+    with tab1:
+        try:
+            url = "http://localhost:1337/api/teamleaders/" + str(LEADERID[0]) + "?populate=teams"
+            d = requests.get(url)
+            dd = d.json()
+            
+            st.session_state.dff = dd['data']['attributes']
+            x = pd.DataFrame(st.session_state.dff, index=[0])
+            edited_dff = st.data_editor(x) 
+            st.session_state.dff = edited_dff
+        
+            firstname = edited_dff['firstname'][0]
+            lastname = edited_dff['lastname'][0]
+            teams = edited_dff['teams'][0]
+
+            st.write("Current Team is: " + dd['data']['attributes']['teams']['data'][0]['attributes']['name'])
+
+            if st.button('Edit Team Leader Details'):
+
+                requests.put(
+                url,
+                headers={"Content-Type": "application/json"},
+                data=json.dumps(
+                    {
+                        "data": 
+                            {
+                                "firstname": firstname,
+                                "lastname": lastname,
+                                "teams": teams,
+                            }
+                    }))
+        except:
+            st.write("Please select a Team Leader")
+    with tab2:
+         with st.form("my_form5"):
+                    firstname = st.text_input("Firstname:")
+                    lastname = st.text_input("Lastname:")
+
+                    submitted = st.form_submit_button("Add Team Leader")
+                    if submitted:
+                        requests.post(
+                        "http://localhost:1337/api/teamleaders/",
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                "data": {
+                                    "firstname": firstname,
+                                    "lastname": lastname,
+                                }
+                            }
+                        ),
+                    )
+
+                   
+if choice=='Manage Projects':
+    try:
+        URLPROJECT = "http://localhost:1337/api/projects"
+        d = requests.get(URLPROJECT)
+        dd = d.json()
+        z = 0
+        projectname_ = []
+        tid=[]
+        sid=[]
+        problemstatement_ = []
+        solution_ = []
+        screenshot1explanation_ = []
+        screenshot2explanation_ = []
+        screenshot3explanation_ = []
+        screenshot4explanation_ = []
+        screenshot5explanation_ = []
+        screenshot6explanation_ = []
+        screenshot7explanation_ = []
+
+        screenshot1_image_ = []
+        screenshot2_image_ = []
+        screenshot3_image_ = []
+        screenshot4_image_ = []
+        screenshot5_image_ = []
+        screenshot6_image_ = []
+        screenshot7_image_ = []
+        imageurl_ = []
+
+        for i in range(len(dd['data'])):
+            projectname_.append(dd['data'][z]['attributes']['projectname'])
+            problemstatement_.append(dd['data'][z]['attributes']['problemstatement'])
+            solution_.append(dd['data'][z]['attributes']['solution'])
+ 
+            screenshot1explanation_.append(dd['data'][z]['attributes']['screenshot1explanation'])
+            screenshot2explanation_.append(dd['data'][z]['attributes']['screenshot2explanation'])
+            screenshot3explanation_.append(dd['data'][z]['attributes']['screenshot3explanation'])
+            screenshot4explanation_.append(dd['data'][z]['attributes']['screenshot4explanation'])
+            screenshot5explanation_.append(dd['data'][z]['attributes']['screenshot5explanation'])
+            screenshot6explanation_.append(dd['data'][z]['attributes']['screenshot6explanation'])
+            screenshot7explanation_.append(dd['data'][z]['attributes']['screenshot7explanation'])
+
+            screenshot1_image_.append(dd['data'][z]['attributes']['screenshot1_image'])
+            screenshot2_image_.append(dd['data'][z]['attributes']['screenshot2_image'])
+            screenshot3_image_.append(dd['data'][z]['attributes']['screenshot3_image'])
+            screenshot4_image_.append(dd['data'][z]['attributes']['screenshot4_image'])
+            screenshot5_image_.append(dd['data'][z]['attributes']['screenshot5_image'])
+            screenshot6_image_.append(dd['data'][z]['attributes']['screenshot6_image'])
+            screenshot7_image_.append(dd['data'][z]['attributes']['screenshot7_image'])
+            
+            sid.append(dd['data'][z]['id'])
+            
+            imageurl_.append(dd['data'][z]['attributes']['imageurl'])
+            z = z + 1
+            
+
+        deptss = pd.DataFrame(data=zip(projectname_,problemstatement_,solution_,screenshot1explanation_,
+                                       screenshot2explanation_,screenshot3explanation_,screenshot4explanation_,
+                                       screenshot5explanation_,screenshot6explanation_,screenshot7explanation_,
+                                       screenshot1_image_,screenshot2_image_,screenshot3_image_,screenshot4_image_,
+                                       screenshot5_image_,screenshot6_image_,screenshot7_image_,imageurl_,sid),
+                                       columns=['projectname','problemstatement','solution','screenshot1explanation',
+                                       'screenshot2explanation','screenshot3explanation','screenshot4explanation',
+                                       'screenshot5explanation','screenshot6explanation','screenshot7explanation',
+                                       'screenshot1_image','screenshot2_image','screenshot3_image','screenshot4_image',
+                                       'screenshot5_image','screenshot6_image','screenshot7_image','imageurl','id'])
+        
+        PROJECT = st.selectbox(
+                "Select a projects",
+                (deptss['projectname']),
+                index=None,
+                placeholder="Select project here...",
+                )
+        Learn = deptss[deptss['projectname'] == PROJECT]
+        PROJECTID = Learn['id'].values
+    except:
+         st.write("Please Select a projects Above")
+
+
+    tab1, tab2 = st.tabs(["Manage Project", "Add Project" ])
+
+    with tab1:
+        try:
+            url = "http://localhost:1337/api/projects/" + str(PROJECTID[0]) + "?populate=teams"
+            d = requests.get(url)
+            dd = d.json()
+            
+            st.session_state.dff = dd['data']['attributes']
+            x = pd.DataFrame(st.session_state.dff, index=[0])
+            edited_dff = st.data_editor(x) 
+            st.session_state.dff = edited_dff
+        
+            projectname = edited_dff['projectname'][0]
+            problemstatement = edited_dff['problemstatement'][0]
+            solution = edited_dff['solution'][0]
+
+            screenshot1explanation = edited_dff['screenshot1explanation'][0]
+            screenshot2explanation = edited_dff['screenshot2explanation'][0]
+            screenshot3explanation = edited_dff['screenshot3explanation'][0]
+            screenshot4explanation = edited_dff['screenshot4explanation'][0]
+            screenshot5explanation = edited_dff['screenshot5explanation'][0]
+            screenshot6explanation = edited_dff['screenshot6explanation'][0]
+            screenshot7explanation = edited_dff['screenshot7explanation'][0]
+
+            screenshot1_image = edited_dff['screenshot1_image'][0]
+            screenshot2_image = edited_dff['screenshot2_image'][0]
+            screenshot3_image = edited_dff['screenshot3_image'][0]
+            screenshot4_image = edited_dff['screenshot4_image'][0]
+            screenshot5_image = edited_dff['screenshot5_image'][0]
+            screenshot6_image = edited_dff['screenshot6_image'][0]
+            screenshot7_image = edited_dff['screenshot7_image'][0]
+            teams = edited_dff['teams'][0]
+
+            st.write("Current Team is: " + dd['data']['attributes']['teams']['data'][0]['attributes']['name'])
+
+            if st.button('Edit Project Details'):
+
+                requests.put(
+                url,
+                headers={"Content-Type": "application/json"},
+                data=json.dumps(
+                    {
+                        "data": 
+                            {
+                                "projectname": projectname,
+                                "problemstatement": problemstatement,
+                                "solution" : solution,
+                                'screenshot1explanation' : screenshot1explanation,
+                                'screenshot2explanation' : screenshot2explanation,
+                                'screenshot3explanation' : screenshot3explanation,
+                                'screenshot4explanation' : screenshot4explanation,
+                                'screenshot5explanation' : screenshot5explanation,
+                                'screenshot6explanation' : screenshot6explanation,
+                                'screenshot7explanation' : screenshot7explanation,
+                                'screenshot1_image' : screenshot1_image,
+                                'screenshot2_image' : screenshot1_image,
+                                'screenshot3_image' : screenshot1_image,
+                                'screenshot4_image' : screenshot1_image,
+                                'screenshot5_image' : screenshot1_image,
+                                'screenshot6_image' : screenshot1_image,
+                                'screenshot7_image' : screenshot1_image
+                            }
+                    }))
+        except:
+            st.write("Please select a project")
+    with tab2:
+         with st.form("my_form6"):
+                    projectname = st.text_input("projectname:")
+                    problemstatement = st.text_input("problemstatement:")
+
+                    submitted = st.form_submit_button("Add a Project")
+                    if submitted:
+                        requests.post(
+                        "http://localhost:1337/api/projects/",
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                "data": {
+                                    "projectname": projectname,
+                                    "problemstatement": problemstatement,
+                                }
+                            }
+                        ),
+                    )                     
 footer="""<style>
 a:link , a:visited{
 color: blue;
