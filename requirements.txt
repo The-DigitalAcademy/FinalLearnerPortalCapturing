@@ -2,6 +2,7 @@ pip==23.3.2
 streamlit
 streamlit_option_menu
 hydralit_components
+Pillow
 pandas
 PIL
 
