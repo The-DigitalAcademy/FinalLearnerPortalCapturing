@@ -21,6 +21,9 @@ menu_data = [
         {'label':"Manage Team Leader"},
         {'label':"Manage Projects"},
         {'label':"Manage Cohorts"},
+        {'label':"Manage Personal Questions"},
+        {'label':"Manage Contact Questions"},
+        {'label':"Manage Education Questions"},
     ]
 
 menu_id = hc.nav_bar(menu_definition=menu_data)
@@ -34,16 +37,16 @@ if choice=='Manage Learner':
     try:
         COHORT = st.selectbox(
                     "Select Cohort",
-                    (['Data Science','UX/UI Design','Web Development']),
+                    (['Data Science','PWD','Full Stack']),
                     index=None,
                     placeholder="Select cohort here...",
                     )
-        URLCOHORT = "http://localhost:1337/api/applicants?filters[$and][0][Program][$contains]="+str(COHORT)
+        URLCOHORT = "http://localhost:1337/api/applicants?filters[$or][0][cohorts][name][$contains]="+str(COHORT)
         d = requests.get(URLCOHORT)
         dd = d.json()
         z = 0
 
-        for i in range(20):
+        for i in range(len(dd['data'])):
             sn.append(dd['data'][z]['attributes']['firstname'])
             sln.append(dd['data'][z]['attributes']['lastname'])
             sid.append(dd['data'][z]['id'])
@@ -63,7 +66,7 @@ if choice=='Manage Learner':
          st.write("Please select a cohort above")
 
 
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Personal Details", "Contact Details", "Soft Skills Ratings","Technical Skills Ratings","Shaper Learner Review", "Project Responsibilities"  ])
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["Personal Details", "Contact Details", "Soft Skills Ratings","Technical Skills Ratings","Shaper Learner Review", "Project Responsibilities", 'Assign Team', 'Assign Project'   ])
 
     with tab1:
         try:
@@ -504,7 +507,124 @@ if choice=='Manage Learner':
                             }
                         ),
                     )    
-                        st.success('This is a success message!', icon="✅")                
+                        st.success('This is a success message!', icon="✅")  
+
+    with tab7:
+        try:
+            URLTEAM = "http://localhost:1337/api/teams"
+            d = requests.get(URLTEAM)
+            dd = d.json()
+            z = 0
+            sn=[]
+            tid=[]
+            sid=[]
+            sln=[]
+
+            for i in range(len(dd['data'])):
+                sn.append(dd['data'][z]['attributes']['name'])
+                sid.append(dd['data'][z]['id'])
+                z = z + 1
+                
+            deptss = pd.DataFrame(data=zip(sn,sid),columns=['name','id'])
+
+            TEAM = st.selectbox(
+                    "Select a Team",
+                    (deptss['name']),
+                    index=None,
+                    placeholder="Select team here...",
+                    )
+            team = deptss[deptss['name'] == TEAM]
+            TEAMID = team['id'].values
+        except:
+            st.write("Please Select a Team Above")
+
+
+     
+        try:
+                url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=teams"
+                d = requests.get(url)
+                dd = d.json()
+                with st.form("my_formsxdsxdeddfecvdvcddfvsscxxs"):
+                        try:
+                            "Current Team is: " + dd['data']['attributes']['teams']['data'][0]['attributes']['name']
+                        except:
+                             "No Team Currently assigned"
+                        submitted = st.form_submit_button("Assign team to selected")
+
+                        if submitted:
+                            requests.put(
+                            url,
+                            headers={"Content-Type": "application/json"},
+                            data=json.dumps(
+                                {
+                                    "data": 
+                                        {
+                                            "teams": int(TEAMID),
+                                        }
+                                }))
+                            st.success('This is a success message!', icon="✅")
+            
+        except:
+                 st.write("Please select a learner")      
+    with tab8:
+        try:
+            URLPROJECT = "http://localhost:1337/api/projects"
+            d = requests.get(URLPROJECT)
+            dd = d.json()
+            z = 0
+            sn=[]
+            tid=[]
+            sid=[]
+            sln=[]
+
+            for i in range(len(dd['data'])):
+                sn.append(dd['data'][z]['attributes']['projectname'])
+                sid.append(dd['data'][z]['id'])
+                z = z + 1
+                
+            deptss = pd.DataFrame(data=zip(sn,sid),columns=['projectname','id'])
+
+            PROJECT = st.selectbox(
+                    "Select a Project",
+                    (deptss['projectname']),
+                    index=None,
+                    placeholder="Select project here...",
+                    )
+            project = deptss[deptss['projectname'] == PROJECT]
+            PROJECTID = project['id'].values
+        except:
+            st.write("Please Select a project above")
+       
+        try:
+
+                url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=projects"
+                d = requests.get(url)
+                dd = d.json()
+
+                with st.form("my_formsxdsxddwceddsdsdsfecvdvcddfvsscxxs"):
+                        try:
+                            "Current Project is: " + dd['data']['attributes']['projects']['data'][0]['attributes']['projectname']
+                        except:
+                             "No Project Currently Assigned"
+
+                        submitted = st.form_submit_button("Assign project to selected")
+                        
+
+                        if submitted:
+                            requests.put(
+                            url,
+                            headers={"Content-Type": "application/json"},
+                            data=json.dumps(
+                                {
+                                    "data": 
+                                        {
+                                            "projects": int(PROJECTID),
+                                        }
+                                }))
+                            st.success('This is a success message!', icon="✅")
+            
+        except:
+                 st.write("Please select a learner")               
 if choice=='Manage Team Leader':
     try:
         URLLEADER = "http://localhost:1337/api/teamleaders"
@@ -562,7 +682,6 @@ if choice=='Manage Team Leader':
                                     {
                                         "firstname": firstname,
                                         "lastname": lastname,
-                                        # "teams": teams,
                                     }
                             }))
                         st.success('This is a success message!', icon="✅")
@@ -994,6 +1113,337 @@ if choice=='Manage Cohorts':
                         ),
                     )
                         st.success('This is a success message!', icon="✅")
+
+if choice=='Manage Personal Questions':
+    try:
+        URLPERSONAL = "http://localhost:1337/api/personal-questions"
+        d = requests.get(URLPERSONAL)
+        dd = d.json()
+        z = 0
+        sn=[]
+        tid=[]
+        sid=[]
+        sln=[]
+        sn2 = []
+        sn3 = []
+
+        for i in range(len(dd['data'])):
+            sn.append(dd['data'][z]['attributes']['question'])
+            sn2.append(dd['data'][z]['attributes']['option'])
+            sn3.append(dd['data'][z]['attributes']['type'])
+            sid.append(dd['data'][z]['id'])
+            z = z + 1
+            
+        deptss = pd.DataFrame(data=zip(sn,sn2,sn3,sid),columns=['question','option','type','id'])
+
+        PERSONALQ = st.selectbox(
+                "Select a question",
+                (deptss['question']),
+                index=None,
+                placeholder="Select question here...",
+                )
+        question = deptss[deptss['question'] == PERSONALQ]
+        QUESTIONIDID = question['id'].values
+    except:
+         st.write("Please Select a question above")
+
+
+    tab1, tab2 = st.tabs(["Manage Questions", "Add Question" ])
+
+    with tab1:
+        try:
+            url = "http://localhost:1337/api/personal-questions/" + str(QUESTIONIDID[0])
+            d = requests.get(url)
+            dd = d.json()
+
+            with st.form("my_formsxdsxdeddfecsscxxs"):
+                    if dd['data']['attributes']['type'] == 'Radio':
+                        a = 1
+                    elif dd['data']['attributes']['type']  == 'Select':
+                                a = 2
+                    elif dd['data']['attributes']['type']  == 'Text':
+                                a = 3
+                    elif dd['data']['attributes']['type']  == 'Date':
+                                a = 4
+                    elif dd['data']['attributes']['type']  == 'Number':
+                                a = 5
+                    else:
+                                a = 1
+                    question = st.text_input("Question:",dd['data']['attributes']['question'])
+                    option = st.text_input("Options:",dd['data']['attributes']['option'])
+                    type = st.selectbox(
+                                            "Type:",
+                                            ("Radio","Select","Text","Date","Number"),
+                                             index= a - 1,
+                                            )
+                    submitted = st.form_submit_button("Edit Question")
+
+                    if submitted:
+                        requests.put(
+                        url,
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                "data": 
+                                    {
+                                        "question": question,
+                                        "option": option,
+                                        "type": type
+                                    }
+                            }))
+                        st.success('This is a success message!', icon="✅")
+            if st.button("Delete This Question"):
+                requests.delete(url)
+        except:
+            st.write("Please select a question")
+    with tab2:
+
+        with st.form("my_form5"):
+                    question = st.text_input("Question:")
+                    option = st.text_input("Options:")
+                    type = st.selectbox(
+                                            "Type:",
+                                            ("Radio","Select","Text","Date","Number"),
+                                            )
+                    submitted = st.form_submit_button("Add Question")
+
+
+                    if submitted:
+                        requests.post(
+                        "http://localhost:1337/api/personal-questions/",
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                "data": {
+                                    "question": question,
+                                    "option": option,
+                                    "type": type,
+                                }
+                            }
+                        ),
+                    )
+                        st.success('This is a success message!', icon="✅")
+
+if choice=='Manage Contact Questions':
+    try:
+        URLCONTACT = "http://localhost:1337/api/contact-details"
+        d = requests.get(URLCONTACT)
+        dd = d.json()
+        z = 0
+        sn=[]
+        tid=[]
+        sid=[]
+        sln=[]
+        sn2 = []
+        sn3 = []
+
+        for i in range(len(dd['data'])):
+            sn.append(dd['data'][z]['attributes']['question'])
+            sn2.append(dd['data'][z]['attributes']['option'])
+            sn3.append(dd['data'][z]['attributes']['type'])
+            sid.append(dd['data'][z]['id'])
+            z = z + 1
+            
+        deptss = pd.DataFrame(data=zip(sn,sn2,sn3,sid),columns=['question','option','type','id'])
+
+        CONTACTQ = st.selectbox(
+                "Select a question",
+                (deptss['question']),
+                index=None,
+                placeholder="Select question here...",
+                )
+        question = deptss[deptss['question'] == CONTACTQ]
+        QUESTIONIDID = question['id'].values
+    except:
+         st.write("Please Select a question above")
+
+
+    tab1, tab2 = st.tabs(["Manage Questions", "Add Question" ])
+
+    with tab1:
+        try:
+            url = "http://localhost:1337/api/contact-details/" + str(QUESTIONIDID[0])
+            d = requests.get(url)
+            dd = d.json()
+
+            with st.form("my_formsxdsxdeddfecsscxxs"):
+                    if dd['data']['attributes']['type'] == 'Radio':
+                        a = 1
+                    elif dd['data']['attributes']['type']  == 'Select':
+                                a = 2
+                    elif dd['data']['attributes']['type']  == 'Text':
+                                a = 3
+                    elif dd['data']['attributes']['type']  == 'Date':
+                                a = 4
+                    elif dd['data']['attributes']['type']  == 'Number':
+                                a = 5
+                    else:
+                                a = 1
+                    question = st.text_input("Question:",dd['data']['attributes']['question'])
+                    option = st.text_input("Options:",dd['data']['attributes']['option'])
+                    type = st.selectbox(
+                                            "Type:",
+                                            ("Radio","Select","Text","Date","Number"),
+                                             index= a - 1,
+                                            )
+                    submitted = st.form_submit_button("Edit Question")
+
+                    if submitted:
+                        requests.put(
+                        url,
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                "data": 
+                                    {
+                                        "question": question,
+                                        "option": option,
+                                        "type": type
+                                    }
+                            }))
+                        st.success('This is a success message!', icon="✅")
+            if st.button("Delete This Question"):
+                requests.delete(url)
+        except:
+            st.write("Please select a question")
+    with tab2:
+
+        with st.form("my_form5"):
+                    question = st.text_input("Question:")
+                    option = st.text_input("Options:")
+                    type = st.selectbox(
+                                            "Type:",
+                                            ("Radio","Select","Text","Date","Number"),
+                                            )
+                    submitted = st.form_submit_button("Add Question")
+
+
+                    if submitted:
+                        requests.post(
+                        "http://localhost:1337/api/contact-details/",
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                "data": {
+                                    "question": question,
+                                    "option": option,
+                                    "type": type,
+                                }
+                            }
+                        ),
+                    )
+                        st.success('This is a success message!', icon="✅")
+
+if choice=='Manage Education Questions':
+    try:
+        URLEDUCATION = "http://localhost:1337/api/qualification-questions"
+        d = requests.get(URLEDUCATION)
+        dd = d.json()
+        z = 0
+        sn=[]
+        tid=[]
+        sid=[]
+        sln=[]
+        sn2 = []
+        sn3 = []
+
+        for i in range(len(dd['data'])):
+            sn.append(dd['data'][z]['attributes']['question'])
+            sn2.append(dd['data'][z]['attributes']['option'])
+            sn3.append(dd['data'][z]['attributes']['type'])
+            sid.append(dd['data'][z]['id'])
+            z = z + 1
+            
+        deptss = pd.DataFrame(data=zip(sn,sn2,sn3,sid),columns=['question','option','type','id'])
+
+        EDUCATIONQ = st.selectbox(
+                "Select a question",
+                (deptss['question']),
+                index=None,
+                placeholder="Select question here...",
+                )
+        question = deptss[deptss['question'] == EDUCATIONQ]
+        QUESTIONIDID = question['id'].values
+    except:
+         st.write("Please Select a question above")
+
+
+    tab1, tab2 = st.tabs(["Manage Questions", "Add Question" ])
+
+    with tab1:
+        try:
+            url = "http://localhost:1337/api/qualification-questions/" + str(QUESTIONIDID[0])
+            d = requests.get(url)
+            dd = d.json()
+
+            with st.form("my_formsxdsxdeddfecsscxxs"):
+                    if dd['data']['attributes']['type'] == 'Radio':
+                        a = 1
+                    elif dd['data']['attributes']['type']  == 'Select':
+                                a = 2
+                    elif dd['data']['attributes']['type']  == 'Text':
+                                a = 3
+                    elif dd['data']['attributes']['type']  == 'Date':
+                                a = 4
+                    elif dd['data']['attributes']['type']  == 'Number':
+                                a = 5
+                    else:
+                                a = 1
+                    question = st.text_input("Question:",dd['data']['attributes']['question'])
+                    option = st.text_input("Options:",dd['data']['attributes']['option'])
+                    type = st.selectbox(
+                                            "Type:",
+                                            ("Radio","Select","Text","Date","Number"),
+                                             index= a - 1,
+                                            )
+                    submitted = st.form_submit_button("Edit Question")
+
+                    if submitted:
+                        requests.put(
+                        url,
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                "data": 
+                                    {
+                                        "question": question,
+                                        "option": option,
+                                        "type": type
+                                    }
+                            }))
+                        st.success('This is a success message!', icon="✅")
+            if st.button("Delete This Question"):
+                requests.delete(url)
+        except:
+            st.write("Please select a question")
+    with tab2:
+
+        with st.form("my_form5"):
+                    question = st.text_input("Question:")
+                    option = st.text_input("Options:")
+                    type = st.selectbox(
+                                            "Type:",
+                                            ("Radio","Select","Text","Date","Number"),
+                                            )
+                    submitted = st.form_submit_button("Add Question")
+
+
+                    if submitted:
+                        requests.post(
+                        "http://localhost:1337/api/qualification-questions/",
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(
+                            {
+                                "data": {
+                                    "question": question,
+                                    "option": option,
+                                    "type": type,
+                                }
+                            }
+                        ),
+                    )
+                        st.success('This is a success message!', icon="✅")
+
             
 footer="""<style>
 a:link , a:visited{
