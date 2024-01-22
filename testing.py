@@ -65,7 +65,7 @@ if choice=='Manage Learner':
          st.write("Please select a cohort above")
 
 
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(["Personal Details", "Contact Details", "Soft Skills Ratings","Technical Skills Ratings","Shaper Learner Review", "Project Responsibilities", 'Assign Team', 'Assign Project', 'Assign Skill Dsecriptions'])
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(["Personal Details", "Contact Details", "Soft Skills Ratings","Technical Skills Ratings","Shaper Learner Review", "Project Responsibilities", 'Assign Team', 'Assign Project', 'Assign Skill Descriptions'])
 
     with tab1:
         try:
