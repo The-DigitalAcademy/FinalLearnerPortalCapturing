@@ -82,9 +82,9 @@ if choice=='Manage Learner':
                         lastname = st.text_input("Lastname:",dd['data']['attributes']['lastname'])
                     with col3:
                         homelanguage = st.text_input("Homelanguage:",dd['data']['attributes']['homelanguage'])
-                        from datetime import datetime
-                        dateofbirth = datetime.strptime(dd['data']['attributes']['dob'], '%Y-%m-%d').date()
-                        dob = st.date_input("Date of Birth:",dateofbirth)
+                        # from datetime import datetime
+                        # dateofbirth = datetime.strptime(dd['data']['attributes']['dob'], '%Y-%m-%d').date()
+                        # dob = st.date_input("Date of Birth:",dateofbirth)
                     with col4:
                         southafrican = st.text_input("Nationality:",dd['data']['attributes']['southafrican'])
                         male = st.text_input("Gender:",dd['data']['attributes']['male'])
