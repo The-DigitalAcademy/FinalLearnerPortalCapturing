@@ -41,11 +41,10 @@ if choice=='Manage Learner':
                     index=None,
                     placeholder="Select cohort here...",
                     )
-        URLCOHORT = "http://localhost:1337/api/applicants?filters[$or][0][cohorts][name][$contains]="+str(COHORT)
+        URLCOHORT = "https://truthful-health-29656117e6.strapiapp.com/api/applicants?filters[$or][0][Program][$eq]="+str(COHORT)
         d = requests.get(URLCOHORT)
         dd = d.json()
         z = 0
-
         for i in range(len(dd['data'])):
             sn.append(dd['data'][z]['attributes']['firstname'])
             sln.append(dd['data'][z]['attributes']['lastname'])
@@ -66,11 +65,11 @@ if choice=='Manage Learner':
          st.write("Please select a cohort above")
 
 
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["Personal Details", "Contact Details", "Soft Skills Ratings","Technical Skills Ratings","Shaper Learner Review", "Project Responsibilities", 'Assign Team', 'Assign Project'   ])
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(["Personal Details", "Contact Details", "Soft Skills Ratings","Technical Skills Ratings","Shaper Learner Review", "Project Responsibilities", 'Assign Team', 'Assign Project', 'Assign Skill Dsecriptions'])
 
     with tab1:
         try:
-            url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0])
+            url = "https://truthful-health-29656117e6.strapiapp.com/api/applicants/" + str(LEARNERID[0])
             d = requests.get(url)
             dd = d.json()
 
@@ -196,7 +195,7 @@ if choice=='Manage Learner':
         except:
             st.write("")
     try:
-        url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
+        url2 = "https://truthful-health-29656117e6.strapiapp.com/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
         d = requests.get(url2)
         dd = d.json()
     except:
@@ -253,13 +252,13 @@ if choice=='Manage Learner':
                                             )
                         mostimproved = st.selectbox(
                                             "Most Improved:",
-                                            ('communication','teamwork','leadership','interpersonal','problemsolving'),
+                                            ('Communication','Team Work','Leadership','Interpersonal','Problem Solving'),
                                             index= a - 1 )
                     submitted = st.form_submit_button("Edit Ratings")
 
                     if submitted:
                         
-                        ff = "http://localhost:1337/api/softskillratings/"+str(id)
+                        ff = "https://truthful-health-29656117e6.strapiapp.com/api/softskillratings/"+str(id)
                         requests.put(
                         ff,
                         headers={"Content-Type": "application/json"},
@@ -306,13 +305,13 @@ if choice=='Manage Learner':
                                             )
                         mostimproved = st.selectbox(
                                             "Most Improved:",
-                                            ('communication','teamwork','leadership','interpersonal','problemsolving'),
+                                            ('Communication','Team Work','Leadership','Interpersonal','Problem Solving'),
                                             )
 
                         submitted = st.form_submit_button("Add Ratings")
                     if submitted:
                         requests.post(
-                        "http://localhost:1337/api/softskillratings/",
+                        "https://truthful-health-29656117e6.strapiapp.com/api/softskillratings/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -366,7 +365,7 @@ if choice=='Manage Learner':
 
                     if submitted:
 
-                        ff = "http://localhost:1337/api/technicalskills/"+str(id)
+                        ff = "https://truthful-health-29656117e6.strapiapp.com/api/technicalskills/"+str(id)
                         requests.put(
                         ff,
                         headers={"Content-Type": "application/json"},
@@ -405,7 +404,7 @@ if choice=='Manage Learner':
                     if submitted:
 
                         requests.post(
-                        "http://localhost:1337/api/technicalskills/",
+                        "https://truthful-health-29656117e6.strapiapp.com/api/technicalskills/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -432,7 +431,7 @@ if choice=='Manage Learner':
                     submitted = st.form_submit_button("Edit Review")
 
                 if submitted:
-                        ff = "http://localhost:1337/api/shaperreviews/"+str(id)
+                        ff = "https://truthful-health-29656117e6.strapiapp.com/api/shaperreviews/"+str(id)
                         requests.put(
                         ff,
                         headers={"Content-Type": "application/json"},
@@ -440,7 +439,7 @@ if choice=='Manage Learner':
                             {
                                     "data": 
                                     {
-                                    "learners": str(LEARNERID[0]),
+                                    "applicants": str(LEARNERID[0]),
                                     "review": review,
                                     }
                         }))
@@ -453,12 +452,12 @@ if choice=='Manage Learner':
                     if submitted:
 
                         requests.post(
-                        "http://localhost:1337/api/shaperreviews/",
+                        "https://truthful-health-29656117e6.strapiapp.com/api/shaperreviews/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
                                 "data": {
-                                    "learners": str(LEARNERID[0]),
+                                    "applicants": str(LEARNERID[0]),
                                     "review": review,
                                 }
                             }
@@ -475,7 +474,7 @@ if choice=='Manage Learner':
                     submitted = st.form_submit_button("Edit Responsibility")
 
                 if submitted:
-                        ff = "http://localhost:1337/api/responsibilities/"+str(id)
+                        ff = "https://truthful-health-29656117e6.strapiapp.com/api/responsibilities/"+str(id)
                         requests.put(
                         ff,
                         headers={"Content-Type": "application/json"},
@@ -496,7 +495,7 @@ if choice=='Manage Learner':
                     if submitted:
                         responsibility
                         requests.post(
-                        "http://localhost:1337/api/responsibilities/",
+                        "https://truthful-health-29656117e6.strapiapp.com/api/responsibilities/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -511,7 +510,7 @@ if choice=='Manage Learner':
 
     with tab7:
         try:
-            URLTEAM = "http://localhost:1337/api/teams"
+            URLTEAM = "https://truthful-health-29656117e6.strapiapp.com/api/teams"
             d = requests.get(URLTEAM)
             dd = d.json()
             z = 0
@@ -538,10 +537,8 @@ if choice=='Manage Learner':
         except:
             st.write("Please Select a Team Above")
 
-
-     
         try:
-                url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=teams"
+                url = "https://truthful-health-29656117e6.strapiapp.com/api/applicants/" + str(LEARNERID[0]) + "?populate=teams"
                 d = requests.get(url)
                 dd = d.json()
                 with st.form("my_formsxdsxdeddfecvdvcddfvsscxxs"):
@@ -568,7 +565,7 @@ if choice=='Manage Learner':
                  st.write("Please select a learner")      
     with tab8:
         try:
-            URLPROJECT = "http://localhost:1337/api/projects"
+            URLPROJECT = "https://truthful-health-29656117e6.strapiapp.com/api/projects"
             d = requests.get(URLPROJECT)
             dd = d.json()
             z = 0
@@ -597,7 +594,7 @@ if choice=='Manage Learner':
        
         try:
 
-                url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=projects"
+                url = "https://truthful-health-29656117e6.strapiapp.com/api/applicants/" + str(LEARNERID[0]) + "?populate=projects"
                 d = requests.get(url)
                 dd = d.json()
 
@@ -624,10 +621,43 @@ if choice=='Manage Learner':
                             st.success('This is a success message!', icon="✅")
             
         except:
-                 st.write("Please select a learner")               
+                 st.write("Please select a learner")  
+    with tab9:
+       
+        try:
+
+                url = "https://truthful-health-29656117e6.strapiapp.com/api/applicants/" + str(LEARNERID[0]) + "?populate=communicationratingdescriptions,interpersonalratingdescriptions,leadershipratingdescriptions,problemsolvingratingdescriptions,teamworkratingdescriptions,techskillsratingdescriptions,softskilldescriptions"
+                d = requests.get(url)
+                dd = d.json()
+
+                with st.form("my_formsxdsxddwceddcdsdsdsfecvdvcddfvsscxxs"):
+                        submitted = st.form_submit_button("Assign project to selected")
+                        
+                        if submitted:
+                            requests.put(
+                            url,
+                            headers={"Content-Type": "application/json"},
+                            data=json.dumps(
+                                {
+                                    "data": 
+                                        {
+                                            "communicationratingdescriptions": 1,
+                                            'interpersonalratingdescriptions' : 1,
+                                            'leadershipratingdescriptions': 1,
+                                            'problemsolvingratingdescriptions': 1,
+                                            'teamworkratingdescriptions': 1,
+                                            'techskillsratingdescriptions': 1,
+                                            'softskilldescriptions': 1
+
+                                        }
+                                }))
+                            st.success('This is a success message!', icon="✅")
+            
+        except:
+                 st.write("Please select a learner")             
 if choice=='Manage Team Leader':
     try:
-        URLLEADER = "http://localhost:1337/api/teamleaders"
+        URLLEADER = "https://truthful-health-29656117e6.strapiapp.com/api/teamleaders"
         d = requests.get(URLLEADER)
         dd = d.json()
         z = 0
@@ -661,7 +691,7 @@ if choice=='Manage Team Leader':
 
     with tab1:
         try:
-            url = "http://localhost:1337/api/teamleaders/" + str(LEADERID[0])
+            url = "https://truthful-health-29656117e6.strapiapp.com/api/teamleaders/" + str(LEADERID[0])
             d = requests.get(url)
             dd = d.json()
             
@@ -697,7 +727,7 @@ if choice=='Manage Team Leader':
 
                     if submitted:
                         requests.post(
-                        "http://localhost:1337/api/teamleaders/",
+                        "https://truthful-health-29656117e6.strapiapp.com/api/teamleaders/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -712,7 +742,7 @@ if choice=='Manage Team Leader':
                
 if choice=='Manage Team':
     try:
-        URLLEADER = "http://localhost:1337/api/teams"
+        URLLEADER = "https://truthful-health-29656117e6.strapiapp.com/api/teams"
         d = requests.get(URLLEADER)
         dd = d.json()
         z = 0
@@ -744,7 +774,7 @@ if choice=='Manage Team':
 
     with tab1:
         try:
-            url = "http://localhost:1337/api/teams/" + str(TEAMID[0])
+            url = "https://truthful-health-29656117e6.strapiapp.com/api/teams/" + str(TEAMID[0])
             d = requests.get(url)
             dd = d.json()
 
@@ -776,7 +806,7 @@ if choice=='Manage Team':
 
                     if submitted:
                         requests.post(
-                        "http://localhost:1337/api/teams/",
+                        "https://truthful-health-29656117e6.strapiapp.com/api/teams/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -790,7 +820,7 @@ if choice=='Manage Team':
 
 if choice=='Manage Projects':
     try:
-        URLPROJECT = "http://localhost:1337/api/projects"
+        URLPROJECT = "https://truthful-health-29656117e6.strapiapp.com/api/projects"
         d = requests.get(URLPROJECT)
         dd = d.json()
         z = 0
@@ -867,7 +897,7 @@ if choice=='Manage Projects':
     tab1, tab2 = st.tabs(["Manage Project", "Add Project" ])
     with tab1:
         try:
-            url = "http://localhost:1337/api/projects/" + str(PROJECTID[0]) + "?populate=teams"
+            url = "https://truthful-health-29656117e6.strapiapp.com/api/projects/" + str(PROJECTID[0]) + "?populate=teams"
             d = requests.get(url)
             dd = d.json()
 
@@ -892,16 +922,16 @@ if choice=='Manage Projects':
                             screenshot7explanation = st.text_area("Screenshot7 Explanation",dd['data']['attributes']['screenshot7explanation'])
                     with st.container():
                         with col7:
-                            screenshot1_image = st.text_area("Screenshot Image1 Explanation:",dd['data']['attributes']['screenshot1_image'])
-                            screenshot2_image = st.text_area("Screenshot Image2 Explanation:",dd['data']['attributes']['screenshot2_image'])
+                            screenshot1_image = st.text_area("Screenshot Image1:",dd['data']['attributes']['screenshot1_image'])
+                            screenshot2_image = st.text_area("Screenshot Image2:",dd['data']['attributes']['screenshot2_image'])
                         with col8:
-                            screenshot3_image = st.text_area("Screenshot Image3 Explanation:",dd['data']['attributes']['screenshot3_image'])
-                            screenshot4_image = st.text_area("Screenshot Image4 Explanation:",dd['data']['attributes']['screenshot4_image'])
+                            screenshot3_image = st.text_area("Screenshot Image3:",dd['data']['attributes']['screenshot3_image'])
+                            screenshot4_image = st.text_area("Screenshot Image4:",dd['data']['attributes']['screenshot4_image'])
                         with col9:
-                            screenshot5_image = st.text_area("Screenshot Image5 Explanation:",dd['data']['attributes']['screenshot5_image'])
-                            screenshot6_image = st.text_area("Screenshot Image6 Explanation",dd['data']['attributes']['screenshot6_image'])
+                            screenshot5_image = st.text_area("Screenshot Image5:",dd['data']['attributes']['screenshot5_image'])
+                            screenshot6_image = st.text_area("Screenshot Image6",dd['data']['attributes']['screenshot6_image'])
                         with col10:
-                            screenshot7_image = st.text_area("Screenshot Image7 Explanation:",dd['data']['attributes']['screenshot7_image'])
+                            screenshot7_image = st.text_area("Screenshot Image7:",dd['data']['attributes']['screenshot7_image'])
                     
                     submitted = st.form_submit_button("Edit Project Details")
 
@@ -946,7 +976,7 @@ if choice=='Manage Projects':
                     submitted = st.form_submit_button("Add a Project")
                     if submitted:
                         requests.post(
-                        "http://localhost:1337/api/projects/",
+                        "https://truthful-health-29656117e6.strapiapp.com/api/projects/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -961,7 +991,7 @@ if choice=='Manage Projects':
 
 if choice=='Manage Cohorts':
     try:
-        URLCOHORT = "http://localhost:1337/api/cohorts"
+        URLCOHORT = "https://truthful-health-29656117e6.strapiapp.com/api/cohorts"
         d = requests.get(URLCOHORT)
         dd = d.json()
         z = 0
@@ -1005,7 +1035,7 @@ if choice=='Manage Cohorts':
             skill6_icon_.append(dd['data'][z]['attributes']['skill6_icon'])
             skill7_icon_.append(dd['data'][z]['attributes']['skill7_icon'])
             z = z + 1
-            
+
         deptss = pd.DataFrame(data=zip(name_,description_,skill1_,skill2_,skill3_,skill4_,skill5_,skill6_,skill7_,
                                        skill1_icon_,skill2_icon_,skill3_icon_,skill4_icon_,
                                        skill5_icon_,skill6_icon_,skill7_icon_,sid_),columns=['name','description','skill1','skill2',
@@ -1026,31 +1056,83 @@ if choice=='Manage Cohorts':
 
     tab1, tab2 = st.tabs(["Manage Cohort", "Add New Cohort" ])
     with tab1:
+        
         try:
-            url = "http://localhost:1337/api/cohorts/" + str(COHORTID[0]) + "?populate=teams"
+            
+            url = "https://truthful-health-29656117e6.strapiapp.com/api/cohorts/" + str(COHORTID[0]) + "?populate=teams"
             d = requests.get(url)
             dd = d.json()
+            try:
+                 a = dd['data'][0]['attributes']['skill1']
+            except:
+                 a = "Python"
+            try:
+                 b = dd['data'][0]['attributes']['skill2']
+            except:
+                 b = "Python"
+            try:
+                 c = dd['data'][0]['attributes']['skill3']
+            except:
+                 c = "Python"
+            try:
+                 d = dd['data'][0]['attributes']['skill4']
+            except:
+                 d = "Python"
+            try:
+                 e = dd['data'][0]['attributes']['skill5']
+            except:
+                 e = "Python"
 
             col1, col12 = st.columns(2)
             col2, col3, col4, col5, col6 = st.columns(5)
             col7, col8, col9, col10, col11 = st.columns(5)
             with st.form("my_formx"):
+                skillz = ['ReactJS','Python','Machine Learning','Databases','SQL','CSS','Django','Javascript','HTML','Angular','Bootstrap',"Visualisation"]
+                
+                sk1 = skillz.index(str(a))
+                sk2 = skillz.index(str(b))
+                sk3 = skillz.index(str(c))
+                sk4 = skillz.index(str(d))
+                sk5 = skillz.index(str(e))
+                 
+
                 with st.container():
+                    
                     with col1:
                         name = st.text_input("Cohort Name:",dd['data']['attributes']['name'])
                     with col12:
                         description = st.text_input("Description:",dd['data']['attributes']['description'])
                 with st.container():
                     with col2:
-                        skill1 = st.text_input("Skill1:",dd['data']['attributes']['skill1'])
+                        skill1 = st.selectbox(
+                                            "Skill1:",
+                                            (skillz),
+                                            index = sk1,
+                                            )
                     with col3:
-                        skill2 = st.text_input("Skill2:",dd['data']['attributes']['skill2'])
+                        skill2 = st.selectbox(
+                                            "Skill2:",
+                                            (skillz),
+                                            index = sk2,
+                                            )
                     with col4:
-                        skill3 = st.text_input("skill3:",dd['data']['attributes']['skill3'])
+                        skill3 = st.selectbox(
+                                            "Skill3:",
+                                            (skillz),
+                                            index = sk3,
+                                            )
                     with col5:
-                        skill4 = st.text_input("Skill4:",dd['data']['attributes']['skill4'])
+                        skill4 = st.selectbox(
+                                            "Skill4:",
+                                            (skillz),
+                                            index = sk4,
+                                            )
                     with col6:
-                        skill5 = st.text_input("skill5:",dd['data']['attributes']['skill5'])
+                        skill5 = st.selectbox(
+                                            "Skill5:",
+                                            (skillz),
+                                            index = sk5,
+                                            )
                 with st.container():
                     with col7:
                         skill1_icon = st.text_input("skill1_icon:",dd['data']['attributes']['skill1_icon'])
@@ -1101,7 +1183,7 @@ if choice=='Manage Cohorts':
                     submitted = st.form_submit_button("Add Cohort")
                     if submitted:
                         requests.post(
-                        "http://localhost:1337/api/cohorts/",
+                        "https://truthful-health-29656117e6.strapiapp.com/api/cohorts/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -1116,7 +1198,7 @@ if choice=='Manage Cohorts':
 
 if choice=='Manage Personal Questions':
     try:
-        URLPERSONAL = "http://localhost:1337/api/personal-questions"
+        URLPERSONAL = "https://truthful-health-29656117e6.strapiapp.com/api/personal-questions"
         d = requests.get(URLPERSONAL)
         dd = d.json()
         z = 0
@@ -1152,29 +1234,20 @@ if choice=='Manage Personal Questions':
 
     with tab1:
         try:
-            url = "http://localhost:1337/api/personal-questions/" + str(QUESTIONIDID[0])
+            url = "https://truthful-health-29656117e6.strapiapp.com/api/personal-questions/" + str(QUESTIONIDID[0])
             d = requests.get(url)
             dd = d.json()
 
             with st.form("my_formsxdsxdeddfecsscxxs"):
-                    if dd['data']['attributes']['type'] == 'Radio':
-                        a = 1
-                    elif dd['data']['attributes']['type']  == 'Select':
-                                a = 2
-                    elif dd['data']['attributes']['type']  == 'Text':
-                                a = 3
-                    elif dd['data']['attributes']['type']  == 'Date':
-                                a = 4
-                    elif dd['data']['attributes']['type']  == 'Number':
-                                a = 5
-                    else:
-                                a = 1
+                    typez = ["Radio","Select","Text","Date","Number"]
+                    typez1 = typez.index(str(dd['data']['attributes']['type']))
+
                     question = st.text_input("Question:",dd['data']['attributes']['question'])
                     option = st.text_input("Options:",dd['data']['attributes']['option'])
                     type = st.selectbox(
                                             "Type:",
                                             ("Radio","Select","Text","Date","Number"),
-                                             index= a - 1,
+                                             index= typez1,
                                             )
                     submitted = st.form_submit_button("Edit Question")
 
@@ -1210,7 +1283,7 @@ if choice=='Manage Personal Questions':
 
                     if submitted:
                         requests.post(
-                        "http://localhost:1337/api/personal-questions/",
+                        "https://truthful-health-29656117e6.strapiapp.com/api/personal-questions/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -1226,7 +1299,7 @@ if choice=='Manage Personal Questions':
 
 if choice=='Manage Contact Questions':
     try:
-        URLCONTACT = "http://localhost:1337/api/contact-details"
+        URLCONTACT = "https://truthful-health-29656117e6.strapiapp.com/api/contact-details"
         d = requests.get(URLCONTACT)
         dd = d.json()
         z = 0
@@ -1262,29 +1335,20 @@ if choice=='Manage Contact Questions':
 
     with tab1:
         try:
-            url = "http://localhost:1337/api/contact-details/" + str(QUESTIONIDID[0])
+            url = "https://truthful-health-29656117e6.strapiapp.com/api/contact-details/" + str(QUESTIONIDID[0])
             d = requests.get(url)
             dd = d.json()
 
             with st.form("my_formsxdsxdeddfecsscxxs"):
-                    if dd['data']['attributes']['type'] == 'Radio':
-                        a = 1
-                    elif dd['data']['attributes']['type']  == 'Select':
-                                a = 2
-                    elif dd['data']['attributes']['type']  == 'Text':
-                                a = 3
-                    elif dd['data']['attributes']['type']  == 'Date':
-                                a = 4
-                    elif dd['data']['attributes']['type']  == 'Number':
-                                a = 5
-                    else:
-                                a = 1
+                    typez = ["Radio","Select","Text","Date","Number"]
+                    typez1 = typez.index(str(dd['data']['attributes']['type']))
+
                     question = st.text_input("Question:",dd['data']['attributes']['question'])
                     option = st.text_input("Options:",dd['data']['attributes']['option'])
                     type = st.selectbox(
                                             "Type:",
                                             ("Radio","Select","Text","Date","Number"),
-                                             index= a - 1,
+                                             index= typez1,
                                             )
                     submitted = st.form_submit_button("Edit Question")
 
@@ -1320,7 +1384,7 @@ if choice=='Manage Contact Questions':
 
                     if submitted:
                         requests.post(
-                        "http://localhost:1337/api/contact-details/",
+                        "https://truthful-health-29656117e6.strapiapp.com/api/contact-details/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -1336,7 +1400,7 @@ if choice=='Manage Contact Questions':
 
 if choice=='Manage Education Questions':
     try:
-        URLEDUCATION = "http://localhost:1337/api/qualification-questions"
+        URLEDUCATION = "https://truthful-health-29656117e6.strapiapp.com/api/qualification-questions"
         d = requests.get(URLEDUCATION)
         dd = d.json()
         z = 0
@@ -1372,29 +1436,20 @@ if choice=='Manage Education Questions':
 
     with tab1:
         try:
-            url = "http://localhost:1337/api/qualification-questions/" + str(QUESTIONIDID[0])
+            url = "https://truthful-health-29656117e6.strapiapp.com/api/qualification-questions/" + str(QUESTIONIDID[0])
             d = requests.get(url)
             dd = d.json()
 
             with st.form("my_formsxdsxdeddfecsscxxs"):
-                    if dd['data']['attributes']['type'] == 'Radio':
-                        a = 1
-                    elif dd['data']['attributes']['type']  == 'Select':
-                                a = 2
-                    elif dd['data']['attributes']['type']  == 'Text':
-                                a = 3
-                    elif dd['data']['attributes']['type']  == 'Date':
-                                a = 4
-                    elif dd['data']['attributes']['type']  == 'Number':
-                                a = 5
-                    else:
-                                a = 1
+                    typez = ["Radio","Select","Text","Date","Number"]
+                    typez1 = typez.index(str(dd['data']['attributes']['type']))
+
                     question = st.text_input("Question:",dd['data']['attributes']['question'])
                     option = st.text_input("Options:",dd['data']['attributes']['option'])
                     type = st.selectbox(
                                             "Type:",
                                             ("Radio","Select","Text","Date","Number"),
-                                             index= a - 1,
+                                             index= typez1,
                                             )
                     submitted = st.form_submit_button("Edit Question")
 
@@ -1430,7 +1485,7 @@ if choice=='Manage Education Questions':
 
                     if submitted:
                         requests.post(
-                        "http://localhost:1337/api/qualification-questions/",
+                        "https://truthful-health-29656117e6.strapiapp.com/api/qualification-questions/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
