@@ -358,7 +358,7 @@ if choice=='Manage Learner':
                         skill4 = st.slider("Skill4:",0,5,int(dd['data']['attributes']['techskillratings']['data'][0]['attributes']['skill4']))
                         skill5 = st.slider("Skill5:",0,5,int(dd['data']['attributes']['techskillratings']['data'][0]['attributes']['skill5']))
                         mostimproved = st.selectbox(
-                                            "Most Improvsed:",
+                                            "Most Improved:",
                                             ('Python','ReactJS','HTML','Javascript','CSS'),
                                             index= a - 1)
                     submitted = st.form_submit_button("Edit Ratings")
@@ -396,7 +396,7 @@ if choice=='Manage Learner':
                     with col3:
                         skill5 = st.slider("Skill5:",0,5,0)
                         mostimproved = st.selectbox(
-                                            "Most Improvsed:",
+                                            "Most Improved:",
                                             ('Python','ReactJS','HTML','Javascript','CSS'),
                                             )
 
