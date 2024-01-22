@@ -161,7 +161,7 @@ if choice=='Manage Learner':
                         postaladdress = st.text_input("Postal Address:",dd['data']['attributes']['postaladdress'])
                         postalcode = st.number_input("Postal Code:",dd['data']['attributes']['postalcode'])
                     with col3:
-                        nextofkinnumber = st.text_input("Next of Kin Number:",dd['data']['attributes']['nextofkinnumber'])
+                        # nextofkinnumber = st.text_input("Next of Kin Number:",dd['data']['attributes']['nextofkinnumber'])
                         phonenumber = st.text_input("Phone Number:",dd['data']['attributes']['phonenumber'])
                     with col4:
                         email = st.text_input("Email:",dd['data']['attributes']['email'])
