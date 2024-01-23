@@ -545,8 +545,8 @@ if choice=='Manage Learner':
                         try:
                             "Current Team is: " + dd['data']['attributes']['teams']['data'][0]['attributes']['name']
                         except:
-                             "No Team Currently assigned"
-                        submitted = st.form_submit_button("Assign team to selected")
+                             "No Team Currently assigned to learner"
+                        submitted = st.form_submit_button("Change team to selected")
 
                         if submitted:
                             requests.put(
@@ -602,9 +602,9 @@ if choice=='Manage Learner':
                         try:
                             "Current Project is: " + dd['data']['attributes']['projects']['data'][0]['attributes']['projectname']
                         except:
-                             "No Project Currently Assigned"
+                             "No project currently assigned to learner"
 
-                        submitted = st.form_submit_button("Assign project to selected")
+                        submitted = st.form_submit_button("Change project to selected")
                         
 
                         if submitted:
