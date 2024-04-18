@@ -1,4 +1,12 @@
 import streamlit as st
+import tab1 as tab1__
+import tab2 as tab2__
+import tab3 as tab3__
+import tab4 as tab4__
+import tab5 as tab5__
+import tab6 as tab6__
+import tab7 as tab7__
+import tab8 as tab8__
 
 st.set_page_config(page_title="Employee Management Tool", page_icon=":bar_chart:", layout="wide")
 import json
@@ -14,7 +22,6 @@ image = Image.open('logo.jpeg')
 st.image(image)
 current_dateTime = datetime.now()
 
-
 menu_data = [
         {'label':"Manage Learner"},
         {'label':"Manage Team"},
@@ -29,9 +36,9 @@ menu_data = [
 menu_id = hc.nav_bar(menu_definition=menu_data)
 
 choice = menu_id
-sn = []
-sln = []
-sid = []
+firstname = []
+lastname = []
+learnerid = []
 
 if choice=='Manage Learner':
     try:
@@ -42,16 +49,15 @@ if choice=='Manage Learner':
                     placeholder="Select cohort here...",
                     )
         URLCOHORT = "http://localhost:1337/api/applicants?filters[$or][0][Program][$eq]="+str(COHORT)
-        d = requests.get(URLCOHORT)
-        dd = d.json()
+        dd = requests.get(URLCOHORT).json()
         z = 0
         for i in range(len(dd['data'])):
-            sn.append(dd['data'][z]['attributes']['firstname'])
-            sln.append(dd['data'][z]['attributes']['lastname'])
-            sid.append(dd['data'][z]['id'])
+            firstname.append(dd['data'][z]['attributes']['firstname'])
+            lastname.append(dd['data'][z]['attributes']['lastname'])
+            learnerid.append(dd['data'][z]['id'])
             z = z + 1
             
-        deptss = pd.DataFrame(data=zip(sn,sln,sid),columns=['firstname','lastname','id'])
+        deptss = pd.DataFrame(data=zip(firstname,lastname,learnerid),columns=['firstname','lastname','id'])
         deptss['fullname'] = deptss['firstname'] + " " + deptss['lastname']
         LEARNER = st.selectbox(
                 "Select a learner",
@@ -61,571 +67,94 @@ if choice=='Manage Learner':
                 )
         Learn = deptss[deptss['fullname'] == LEARNER]
         LEARNERID = Learn['id'].values
+
     except:
          st.write("Please select a cohort above")
 
-
     tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(["Personal Details", "Contact Details", "Soft Skills Ratings","Technical Skills Ratings","Shaper Learner Review", "Project Responsibilities", 'Assign Team', 'Assign Project', 'Assign Skill Descriptions'])
-
+    
     with tab1:
         try:
-            url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0])
-            d = requests.get(url)
-            dd = d.json()
-
-            col1, col2, col3, col4, col5 = st.columns(5)
-            with st.form("my_formyacdaswd"):
-                    with col1:
-                        st.image(dd['data']['attributes']['imageurl'], width=120)
-                    with col2:
-                        firstname = st.text_input("Firstname:",dd['data']['attributes']['firstname'])
-                        lastname = st.text_input("Lastname:",dd['data']['attributes']['lastname'])
-                    with col3:
-                        homelanguage = st.text_input("Homelanguage:",dd['data']['attributes']['homelanguage'])
-                        from datetime import datetime
-                        dateofbirth = datetime.strptime(dd['data']['attributes']['dob'], '%Y-%m-%d').date()
-                        dob = st.date_input("Date of Birth:",dateofbirth)
-                    with col4:
-                        southafrican = st.text_input("Nationality:",dd['data']['attributes']['southafrican'])
-                        male = st.text_input("Gender:",dd['data']['attributes']['male'])
-                    with col5:
-                        nextofkin = st.text_input("Next of Kin:",dd['data']['attributes']['nextofkin'])
-                        idnumber = st.text_input("ID Number:",dd['data']['attributes']['idnumber'])
-                  
-                    submitted = st.form_submit_button("Edit Personal Details")
-    
-                    if submitted:
-
-                        requests.put(
-                        url,
-                        headers={"Content-Type": "application/json"},
-                        data=json.dumps(
-                            {
-                                "data": 
-                                    {
-                                        "firstname": firstname,
-                                        "lastname": lastname,
-                                        "dob": str(dob),
-                                        "male": str(male),
-                                        "southafrican": str(southafrican),
-                                        "homelanguage": homelanguage,
-                                        "nextofkin": nextofkin,
-                                        "idnumber": idnumber,
-                                    }
-                            }))
-                        st.success('This is a success message!', icon="✅")
+            url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0])   
+            tab1_ = tab1__.tab1__(url)
         except:
             st.write("Please select a learner")
 
     with tab2:
         try:
-            d = requests.get(url)
-            dd = d.json()
-
-            col1, col2, col3, col4 = st.columns(4)
-            with st.form("my_formyacdga"):
-                    if dd['data']['attributes']['province'] == 'Gauteng':
-                        a = 1
-                    elif dd['data']['attributes']['province'] == 'North West':
-                        a = 2
-                    elif dd['data']['attributes']['province'] == 'Mpumalanga':
-                        a = 3
-                    elif dd['data']['attributes']['province'] == 'Free State':
-                        a = 4
-                    elif dd['data']['attributes']['province'] == 'Limpopo':
-                        a = 5
-                    elif dd['data']['attributes']['province'] == 'Northen Cape':
-                        a = 6
-                    elif dd['data']['attributes']['province'] == 'Western Cape':
-                        a = 7
-                    elif dd['data']['attributes']['province'] == 'Eastern Cape':
-                        a = 8
-                    elif dd['data']['attributes']['province'] == 'KwaZulu Natal':
-                        a = 9
-                    else:
-                         a = 1
-                   
-                    with col1:
-                        
-                        city = st.text_input("City:",dd['data']['attributes']['city'])
-                        province = st.selectbox(
-                                            "Province:",
-                                            ("Gauteng", "North West", "Mpumalanga", "Free State","Limpopo",
-                                              "Northen Cape","Western Cape", "Eastern Cape", "KwaZulu Natal"),
-                                             index= a - 1,
-                                            )
-                        imageurl = st.text_input("Profile Picture URL:",dd['data']['attributes']['imageurl'])
-
-                    with col2:
-                        physicaladdress = st.text_input("Physical Address:",dd['data']['attributes']['physicaladdress'])
-                        postaladdress = st.text_input("Postal Address:",dd['data']['attributes']['postaladdress'])
-                        postalcode = st.number_input("Postal Code:",dd['data']['attributes']['postalcode'])
-                    with col3:
-                        # nextofkinnumber = st.text_input("Next of Kin Number:",dd['data']['attributes']['nextofkinnumber'])
-                        phonenumber = st.text_input("Phone Number:",dd['data']['attributes']['phonenumber'])
-                    with col4:
-                        email = st.text_input("Email:",dd['data']['attributes']['email'])
-                        githublink = st.text_input("Github Link:",dd['data']['attributes']['githublink'])
-                        linkedinlink = st.text_input("Linkedin Link:",dd['data']['attributes']['linkedinlink'])
-
-                    submitted = st.form_submit_button("Edit Contact Details")
-      
-                    if submitted:
-                        requests.put(
-                        url,
-                        headers={"Content-Type": "application/json"},
-                        data=json.dumps(
-                            {
-                                "data": 
-                                    {
-                                        "email": email,
-                                        "province": province,
-                                        "city": city,
-                                        "physicaladdress": physicaladdress,
-                                        "postaladdress": postaladdress,
-                                        "phonenumber": phonenumber,
-                                        "postalcode": str(postalcode),
-                                        "githublink": githublink,
-                                        "linkedinlink": linkedinlink,
-                                        "nextofkinnumber": nextofkinnumber,
-                                        "imageurl": imageurl,
-                                    }
-                            }))
-                        st.success('This is a success message!', icon="✅")
+           url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0])  
+           tab2_ = tab2__.tab2__(url)
         except:
             st.write("")
-    try:
-        url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
-        d = requests.get(url2)
-        dd = d.json()
-    except:
-         st.write("")
-
+ 
     with tab3:
         try:
-            if (len(dd['data']['attributes']['softskillratings']['data'][0]['attributes'])> 0):
-                id = dd['data']['attributes']['softskillratings']['data'][0]['id']
-                
-                col1, col2, col3 = st.columns(3)
-                with st.form("my_formyes"):
-                    moi = str(dd['data']['attributes']['softskillratings']['data'][0]['attributes']['mostimproved'])
-                    if moi == 'communication':
-                        a = 1
-                    elif moi == 'teamwork':
-                        a = 2
-                    elif moi == 'leadership':
-                        a = 3
-                    elif moi == 'interpersonal':
-                        a = 4
-                    elif moi == 'problemsolving':
-                        a = 5
-                    else:
-                         a = 1
-                    with col1:
-                        problemsolving = st.selectbox(
-                                            "Problem Solving:",
-                                            ('1','2','3','4','5'),
-                                            index=int(dd['data']['attributes']['softskillratings']['data'][0]['attributes']['problemsolving'])-1,
-                                            )
-                        interpersonal = st.selectbox(
-                                            "Interpersonal:",
-                                            ('1','2','3','4','5'),
-                                            index=int(dd['data']['attributes']['softskillratings']['data'][0]['attributes']['interpersonal'])-1,
-                                            )
-                    with col2:
-                        communication = st.selectbox(
-                                            "Communication:",
-                                            ('1','2','3','4','5'),
-                                            index=int(dd['data']['attributes']['softskillratings']['data'][0]['attributes']['communication'])-1,
-                                            )
-                        teamwork = st.selectbox(
-                                            "Team Work:",
-                                            ('1','2','3','4','5'),
-                                            index=int(dd['data']['attributes']['softskillratings']['data'][0]['attributes']['teamwork']) - 1,
-                                            )
-                    with col3:
+            url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
 
-                        leadership = st.selectbox(
-                                            "Leadership:",
-                                            ('1','2','3','4','5'),
-                                            index=int(dd['data']['attributes']['softskillratings']['data'][0]['attributes']['leadership']) - 1,
-                                            )
-                        mostimproved = st.selectbox(
-                                            "Most Improved:",
-                                            ('Communication','Team Work','Leadership','Interpersonal','Problem Solving'),
-                                            index= a - 1 )
-                    submitted = st.form_submit_button("Edit Ratings")
-
-                    if submitted:
-                        
-                        ff = "http://localhost:1337/api/softskillratings/"+str(id)
-                        requests.put(
-                        ff,
-                        headers={"Content-Type": "application/json"},
-                        data=json.dumps(
-                            {
-                                    "data": 
-                                    {
-                                    "applicants": str(LEARNERID[0]),
-                                    "problemsolving": problemsolving,
-                                    "interpersonal": interpersonal,
-                                    "communication": communication,
-                                    "teamwork": teamwork,
-                                    "leadership": leadership,
-                                    "mostimproved" : str(mostimproved)
-                                    }
-                        }))
-                        st.success('This is a success message!', icon="✅")
+            dd = requests.get(url2).json()
+            try:
+                tab3_ = tab3__.tab3a__(dd, str(LEARNERID[0]))
+            except:
+                tab3_ = tab3__.tab3b__(str(LEARNERID[0]))
         except:
-            with st.form("my_form"):
-                    col1, col2, col3 = st.columns(3)
-
-                    with col1:
-                        problemsolving = st.selectbox(
-                                            "Problem Solving:",
-                                            ('1','2','3','4','5'),
-                                            )
-                        interpersonal = st.selectbox(
-                                            "Interpersonal:",
-                                            ('1','2','3','4','5'),
-                                            )
-                    with col2:
-                        communication = st.selectbox(
-                                            "Communication:",
-                                            ('1','2','3','4','5'),
-                                            )
-                        teamwork = st.selectbox(
-                                            "Teamwork:",
-                                            ('1','2','3','4','5'),
-                                            )
-                    with col3:
-                        leadership = st.selectbox(
-                                            "Leadership:",
-                                            ('1','2','3','4','5'),
-                                            )
-                        mostimproved = st.selectbox(
-                                            "Most Improved:",
-                                            ('Communication','Team Work','Leadership','Interpersonal','Problem Solving'),
-                                            )
-
-                        submitted = st.form_submit_button("Add Ratings")
-                    if submitted:
-                        requests.post(
-                        "http://localhost:1337/api/softskillratings/",
-                        headers={"Content-Type": "application/json"},
-                        data=json.dumps(
-                            {
-                                "data": {
-                                    "applicants": str(LEARNERID[0]),
-                                    "problemsolving": problemsolving,
-                                    "interpersonal": interpersonal,
-                                    "communication": teamwork,
-                                    "teamwork": communication,
-                                    "leadership": leadership,
-                                    "mostimproved" : mostimproved,
-                                }
-                            }
-                        ),
-                    )
-                        st.success('This is a success message!', icon="✅")
+            st.write("")
 
     with tab4:     
         try:
-            if (len(dd['data']['attributes']['techskillratings']['data'][0]['attributes'])> 0):
-                id = dd['data']['attributes']['techskillratings']['data'][0]['id']
-                
-                col1, col2, col3 = st.columns(3)
-                with st.form("my_formx"):
-
-                    if dd['data']['attributes']['techskillratings']['data'][0]['attributes']['mostimproved'] == 'Python':
-                        a = 1
-                    elif dd['data']['attributes']['techskillratings']['data'][0]['attributes']['mostimproved']  == 'ReactJS':
-                        a = 2
-                    elif dd['data']['attributes']['techskillratings']['data'][0]['attributes']['mostimproved']  == 'HTML':
-                        a = 3
-                    elif dd['data']['attributes']['techskillratings']['data'][0]['attributes']['mostimproved']  == 'Javascript':
-                        a = 4
-                    elif dd['data']['attributes']['techskillratings']['data'][0]['attributes']['mostimproved']  == 'CSS':
-                        a = 5
-                    else:
-                        a = 1
-                        
-                    with col1:
-                        skill1 = st.slider("Skill1:",0,5,int(dd['data']['attributes']['techskillratings']['data'][0]['attributes']['skill1']))
-                        skill2 = st.slider("Skill2:",0,5,int(dd['data']['attributes']['techskillratings']['data'][0]['attributes']['skill2']))
-                        skill3 = st.slider("Skill3:",0,5,int(dd['data']['attributes']['techskillratings']['data'][0]['attributes']['skill3']))
-                    with col3:
-                        skill4 = st.slider("Skill4:",0,5,int(dd['data']['attributes']['techskillratings']['data'][0]['attributes']['skill4']))
-                        skill5 = st.slider("Skill5:",0,5,int(dd['data']['attributes']['techskillratings']['data'][0]['attributes']['skill5']))
-                        mostimproved = st.selectbox(
-                                            "Most Improved:",
-                                            ('Python','ReactJS','HTML','Javascript','CSS'),
-                                            index= a - 1)
-                    submitted = st.form_submit_button("Edit Ratings")
-
-                    if submitted:
-
-                        ff = "http://localhost:1337/api/technicalskills/"+str(id)
-                        requests.put(
-                        ff,
-                        headers={"Content-Type": "application/json"},
-                        data=json.dumps(
-                            {
-                                    "data":          
-                                    {
-                                    "applicants": str(LEARNERID[0]),
-                                    "skill1": str(skill1),
-                                    "skill2": str(skill2),
-                                    "skill3": str(skill3),
-                                    "skill4": str(skill4),
-                                    "skill5": str(skill5),
-                                    "mostimproved": str(mostimproved),
-
-                                    }
-                        }))
-                        st.success('This is a success message!', icon="✅")
+            dd = requests.get(url2).json()
+            try:
+                tab4_ = tab4__.tab4a__(dd, str(LEARNERID[0]))
+            except:
+                tab4_ = tab4__.tab4a__(str(LEARNERID[0]))
         except:
-            with st.form("my_form2"):
-                    col1, col2, col3 = st.columns(3)
-                    with col1:
-                        skill1 = st.slider("Skill1:",0,5,0)
-                        skill2 = st.slider("Skill2:",0,5,0)
-                    with col2:
-                        skill3 = st.slider("Skill3:",0,5,0)
-                        skill4 = st.slider("Skill4:",0,5,0)
-                    with col3:
-                        skill5 = st.slider("Skill5:",0,5,0)
-                        mostimproved = st.selectbox(
-                                            "Most Improved:",
-                                            ('Python','ReactJS','HTML','Javascript','CSS'),
-                                            )
+            st.write("")
 
-                    submitted = st.form_submit_button("Add Ratings")
-                    if submitted:
-
-                        requests.post(
-                        "http://localhost:1337/api/technicalskills/",
-                        headers={"Content-Type": "application/json"},
-                        data=json.dumps(
-                            {
-                                "data": {
-                                    "applicants": str(LEARNERID[0]),
-                                    "skill1": str(skill1),
-                                    "skill2": str(skill2),
-                                    "skill3": str(skill3),
-                                    "skill4": str(skill4),
-                                    "skill5": str(skill5),
-                                }
-                            }
-                        ),
-                    )
-                        st.success('This is a success message!', icon="✅")
     with tab5:     
         try:
-            if (len(dd['data']['attributes']['shaperreviews']['data'][0]['attributes'])> 0):
-                id = dd['data']['attributes']['shaperreviews']['data'][0]['id']
-            
-                with st.form("my_formsxdsxcs"):
-                    review = st.text_input("Shaper Review:",dd['data']['attributes']['shaperreviews']['data'][0]['attributes']['review'])
-                    
-                    submitted = st.form_submit_button("Edit Review")
-
-                if submitted:
-                        ff = "http://localhost:1337/api/shaperreviews/"+str(id)
-                        requests.put(
-                        ff,
-                        headers={"Content-Type": "application/json"},
-                        data=json.dumps(
-                            {
-                                    "data": 
-                                    {
-                                    "applicants": str(LEARNERID[0]),
-                                    "review": review,
-                                    }
-                        }))
-                        st.success('This is a success message!', icon="✅")
+            dd = requests.get(url2).json()
+            try:
+                tab5_ = tab5__.tab5a__(dd, str(LEARNERID[0]))
+            except:
+                tab5_ = tab5__.tab5b__(str(LEARNERID[0]))
         except:
-            with st.form("my_formxd3"):
-                    review = st.text_input("Review:")
+             st.write("")
 
-                    submitted = st.form_submit_button("Add Review")
-                    if submitted:
-
-                        requests.post(
-                        "http://localhost:1337/api/shaperreviews/",
-                        headers={"Content-Type": "application/json"},
-                        data=json.dumps(
-                            {
-                                "data": {
-                                    "applicants": str(LEARNERID[0]),
-                                    "review": review,
-                                }
-                            }
-                        ),
-                    )
-                        st.success('This is a success message!', icon="✅")
     with tab6:     
         try:
-            if (len(dd['data']['attributes']['responsibilities']['data'][0]['attributes'])> 0):
-                id = dd['data']['attributes']['responsibilities']['data'][0]['id']
-                with st.form("my_formsxxsdsqdxcds"):
-                    responsibility = st.text_input("Responsibilities:",dd['data']['attributes']['responsibilities']['data'][0]['attributes']['responsibility'])
-                    
-                    submitted = st.form_submit_button("Edit Responsibility")
-
-                if submitted:
-                        ff = "http://localhost:1337/api/responsibilities/"+str(id)
-                        requests.put(
-                        ff,
-                        headers={"Content-Type": "application/json"},
-                        data=json.dumps(
-                            {
-                                    "data": 
-                                    {
-                                    "applicants": str(LEARNERID[0]),
-                                    "responsibility": responsibility,
-                                    }
-                        }))
-                        st.success('This is a success message!', icon="✅")
+            dd = requests.get(url2).json()
+            try:
+                tab6_ = tab6__.tab6a__(dd, str(LEARNERID[0]))
+            except:
+                tab6_ = tab6__.tab6b__(str(LEARNERID[0]))
         except:
-            with st.form("my_form3waxdsa"):
-                    responsibility = st.text_input("Responsibility:")
-
-                    submitted = st.form_submit_button("Add Responsibility")
-                    if submitted:
-                        responsibility
-                        requests.post(
-                        "http://localhost:1337/api/responsibilities/",
-                        headers={"Content-Type": "application/json"},
-                        data=json.dumps(
-                            {
-                                "data": {
-                                    "applicants": str(LEARNERID[0]),
-                                    "responsibility": responsibility,
-                                }
-                            }
-                        ),
-                    )    
-                        st.success('This is a success message!', icon="✅")  
+            st.write("")
 
     with tab7:
         try:
-            URLTEAM = "http://localhost:1337/api/teams"
-            d = requests.get(URLTEAM)
-            dd = d.json()
-            z = 0
-            sn=[]
-            tid=[]
-            sid=[]
-            sln=[]
-
-            for i in range(len(dd['data'])):
-                sn.append(dd['data'][z]['attributes']['name'])
-                sid.append(dd['data'][z]['id'])
-                z = z + 1
-                
-            deptss = pd.DataFrame(data=zip(sn,sid),columns=['name','id'])
-
-            TEAM = st.selectbox(
-                    "Select a Team",
-                    (deptss['name']),
-                    index=None,
-                    placeholder="Select team here...",
-                    )
-            team = deptss[deptss['name'] == TEAM]
-            TEAMID = team['id'].values
+            dd = requests.get(url2).json()
+            try:
+                tab7_ = tab7__.tab7a__()
+            except:
+                st.write("Please Select a Team Above")
+            try:
+                tab7_ = tab7__.tab7b__()
+            except:
+                st.write("Please Select a Team Above")
         except:
             st.write("Please Select a Team Above")
 
-        try:
-                url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=teams"
-                d = requests.get(url)
-                dd = d.json()
-                with st.form("my_formsxdsxdeddfecvdvcddfvsscxxs"):
-                        try:
-                            "Current Team is: " + dd['data']['attributes']['teams']['data'][0]['attributes']['name']
-                        except:
-                             "No Team Currently assigned to learner"
-                        submitted = st.form_submit_button("Change team to selected")
-
-                        if submitted:
-                            requests.put(
-                            url,
-                            headers={"Content-Type": "application/json"},
-                            data=json.dumps(
-                                {
-                                    "data": 
-                                        {
-                                            "teams": int(TEAMID),
-                                        }
-                                }))
-                            st.success('This is a success message!', icon="✅")
-            
-        except:
-                 st.write("Please select a learner")      
     with tab8:
         try:
-            URLPROJECT = "http://localhost:1337/api/projects"
-            d = requests.get(URLPROJECT)
-            dd = d.json()
-            z = 0
-            sn=[]
-            tid=[]
-            sid=[]
-            sln=[]
-
-            for i in range(len(dd['data'])):
-                sn.append(dd['data'][z]['attributes']['projectname'])
-                sid.append(dd['data'][z]['id'])
-                z = z + 1
+            try:
+                tab8_ = tab8__.tab8a__(dd, str(LEARNERID[0]))
+            except:
+                tab8_ = tab8__.tab8b__(str(LEARNERID[0]))
                 
-            deptss = pd.DataFrame(data=zip(sn,sid),columns=['projectname','id'])
-
-            PROJECT = st.selectbox(
-                    "Select a Project",
-                    (deptss['projectname']),
-                    index=None,
-                    placeholder="Select project here...",
-                    )
-            project = deptss[deptss['projectname'] == PROJECT]
-            PROJECTID = project['id'].values
-        except:
-            st.write("Please Select a project above")
-       
-        try:
-
-                url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=projects"
-                d = requests.get(url)
-                dd = d.json()
-
-                with st.form("my_formsxdsxddwceddsdsdsfecvdvcddfvsscxxs"):
-                        try:
-                            "Current Project is: " + dd['data']['attributes']['projects']['data'][0]['attributes']['projectname']
-                        except:
-                             "No project currently assigned to learner"
-
-                        submitted = st.form_submit_button("Change project to selected")
-                        
-
-                        if submitted:
-                            requests.put(
-                            url,
-                            headers={"Content-Type": "application/json"},
-                            data=json.dumps(
-                                {
-                                    "data": 
-                                        {
-                                            "projects": int(PROJECTID),
-                                        }
-                                }))
-                            st.success('This is a success message!', icon="✅")
-            
         except:
                  st.write("Please select a learner")  
     with tab9:
        
         try:
-
                 url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=communicationratingdescriptions,interpersonalratingdescriptions,leadershipratingdescriptions,problemsolvingratingdescriptions,teamworkratingdescriptions,techskillsratingdescriptions,softskilldescriptions"
                 d = requests.get(url)
                 dd = d.json()
