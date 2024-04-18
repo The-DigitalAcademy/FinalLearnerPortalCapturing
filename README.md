@@ -4,7 +4,7 @@ The Learner Portfolio Capture App is a simple yet powerful tool built with Pytho
 
 # Technologies Used
 
-### Python, Streamlit, Postgresql
+### Python, Streamlit, StrapiCMS
 
 
 # Features
