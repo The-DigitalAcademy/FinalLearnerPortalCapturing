@@ -22,7 +22,7 @@ Export Functionality: The app allows users to export learner portfolio data to f
 ### How to run this app
 Clone the Repository: Clone the repository to your local machine using the following command:
 
-# git clone https://github.com/your_username/learner-portfolio-app.git
+# git clone [https://github.com/your_username/learner-portfolio-app.git]
 
 Install Dependencies: Navigate to the project directory and install the required dependencies using pip:
 cd shaper-portal-capturing
