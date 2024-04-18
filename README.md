@@ -1,6 +1,6 @@
-# Shaper EMS APP
+# Shaper Learner Portal APP
 
-On this Project I am building an  Employee Management System performs simple task such as entering employee data and displaying all entered data ,the entered data is stored in a postgres database and uses the basic CRUD function to manipulate data by adding,deleting and updating.The user interface is used by the user for interacting with the system.
+The Learner Portfolio Capture App is a simple yet powerful tool built with Python and Streamlit to facilitate the collection and management of learner portfolio details. This application aims to streamline the process of capturing essential information about learners, such as their educational background, skills, projects, and achievements, in a structured and organized manner.
 
 # Technologies Used
 
