@@ -21,9 +21,9 @@ menu_data = [
         {'label':"Manage Team Leader"},
         {'label':"Manage Projects"},
         {'label':"Manage Cohorts"},
-        {'label':"Manage Personal Questions"},
-        {'label':"Manage Contact Questions"},
-        {'label':"Manage Education Questions"},
+        # {'label':"Manage Personal Questions"},
+        # {'label':"Manage Contact Questions"},
+        # {'label':"Manage Education Questions"},
     ]
 
 menu_id = hc.nav_bar(menu_definition=menu_data)
@@ -37,11 +37,11 @@ if choice=='Manage Learner':
     try:
         COHORT = st.selectbox(
                     "Select Cohort",
-                    (['Data Science','PWD','Full Stack']),
+                    (['Egypt','PWD','Full Stack']),
                     index=None,
                     placeholder="Select cohort here...",
                     )
-        URLCOHORT = "https://truthful-health-29656117e6.strapiapp.com/api/applicants?filters[$or][0][Program][$eq]="+str(COHORT)
+        URLCOHORT = "http://localhost:1337/api/applicants?filters[$or][0][Program][$eq]="+str(COHORT)
         d = requests.get(URLCOHORT)
         dd = d.json()
         z = 0
@@ -69,7 +69,7 @@ if choice=='Manage Learner':
 
     with tab1:
         try:
-            url = "https://truthful-health-29656117e6.strapiapp.com/api/applicants/" + str(LEARNERID[0])
+            url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0])
             d = requests.get(url)
             dd = d.json()
 
@@ -82,9 +82,9 @@ if choice=='Manage Learner':
                         lastname = st.text_input("Lastname:",dd['data']['attributes']['lastname'])
                     with col3:
                         homelanguage = st.text_input("Homelanguage:",dd['data']['attributes']['homelanguage'])
-                        # from datetime import datetime
-                        # dateofbirth = datetime.strptime(dd['data']['attributes']['dob'], '%Y-%m-%d').date()
-                        # dob = st.date_input("Date of Birth:",dateofbirth)
+                        from datetime import datetime
+                        dateofbirth = datetime.strptime(dd['data']['attributes']['dob'], '%Y-%m-%d').date()
+                        dob = st.date_input("Date of Birth:",dateofbirth)
                     with col4:
                         southafrican = st.text_input("Nationality:",dd['data']['attributes']['southafrican'])
                         male = st.text_input("Gender:",dd['data']['attributes']['male'])
@@ -195,7 +195,7 @@ if choice=='Manage Learner':
         except:
             st.write("")
     try:
-        url2 = "https://truthful-health-29656117e6.strapiapp.com/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
+        url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
         d = requests.get(url2)
         dd = d.json()
     except:
@@ -258,7 +258,7 @@ if choice=='Manage Learner':
 
                     if submitted:
                         
-                        ff = "https://truthful-health-29656117e6.strapiapp.com/api/softskillratings/"+str(id)
+                        ff = "http://localhost:1337/api/softskillratings/"+str(id)
                         requests.put(
                         ff,
                         headers={"Content-Type": "application/json"},
@@ -311,7 +311,7 @@ if choice=='Manage Learner':
                         submitted = st.form_submit_button("Add Ratings")
                     if submitted:
                         requests.post(
-                        "https://truthful-health-29656117e6.strapiapp.com/api/softskillratings/",
+                        "http://localhost:1337/api/softskillratings/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -365,7 +365,7 @@ if choice=='Manage Learner':
 
                     if submitted:
 
-                        ff = "https://truthful-health-29656117e6.strapiapp.com/api/technicalskills/"+str(id)
+                        ff = "http://localhost:1337/api/technicalskills/"+str(id)
                         requests.put(
                         ff,
                         headers={"Content-Type": "application/json"},
@@ -404,7 +404,7 @@ if choice=='Manage Learner':
                     if submitted:
 
                         requests.post(
-                        "https://truthful-health-29656117e6.strapiapp.com/api/technicalskills/",
+                        "http://localhost:1337/api/technicalskills/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -431,7 +431,7 @@ if choice=='Manage Learner':
                     submitted = st.form_submit_button("Edit Review")
 
                 if submitted:
-                        ff = "https://truthful-health-29656117e6.strapiapp.com/api/shaperreviews/"+str(id)
+                        ff = "http://localhost:1337/api/shaperreviews/"+str(id)
                         requests.put(
                         ff,
                         headers={"Content-Type": "application/json"},
@@ -452,7 +452,7 @@ if choice=='Manage Learner':
                     if submitted:
 
                         requests.post(
-                        "https://truthful-health-29656117e6.strapiapp.com/api/shaperreviews/",
+                        "http://localhost:1337/api/shaperreviews/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -474,7 +474,7 @@ if choice=='Manage Learner':
                     submitted = st.form_submit_button("Edit Responsibility")
 
                 if submitted:
-                        ff = "https://truthful-health-29656117e6.strapiapp.com/api/responsibilities/"+str(id)
+                        ff = "http://localhost:1337/api/responsibilities/"+str(id)
                         requests.put(
                         ff,
                         headers={"Content-Type": "application/json"},
@@ -495,7 +495,7 @@ if choice=='Manage Learner':
                     if submitted:
                         responsibility
                         requests.post(
-                        "https://truthful-health-29656117e6.strapiapp.com/api/responsibilities/",
+                        "http://localhost:1337/api/responsibilities/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -510,7 +510,7 @@ if choice=='Manage Learner':
 
     with tab7:
         try:
-            URLTEAM = "https://truthful-health-29656117e6.strapiapp.com/api/teams"
+            URLTEAM = "http://localhost:1337/api/teams"
             d = requests.get(URLTEAM)
             dd = d.json()
             z = 0
@@ -538,7 +538,7 @@ if choice=='Manage Learner':
             st.write("Please Select a Team Above")
 
         try:
-                url = "https://truthful-health-29656117e6.strapiapp.com/api/applicants/" + str(LEARNERID[0]) + "?populate=teams"
+                url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=teams"
                 d = requests.get(url)
                 dd = d.json()
                 with st.form("my_formsxdsxdeddfecvdvcddfvsscxxs"):
@@ -565,7 +565,7 @@ if choice=='Manage Learner':
                  st.write("Please select a learner")      
     with tab8:
         try:
-            URLPROJECT = "https://truthful-health-29656117e6.strapiapp.com/api/projects"
+            URLPROJECT = "http://localhost:1337/api/projects"
             d = requests.get(URLPROJECT)
             dd = d.json()
             z = 0
@@ -594,7 +594,7 @@ if choice=='Manage Learner':
        
         try:
 
-                url = "https://truthful-health-29656117e6.strapiapp.com/api/applicants/" + str(LEARNERID[0]) + "?populate=projects"
+                url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=projects"
                 d = requests.get(url)
                 dd = d.json()
 
@@ -626,7 +626,7 @@ if choice=='Manage Learner':
        
         try:
 
-                url = "https://truthful-health-29656117e6.strapiapp.com/api/applicants/" + str(LEARNERID[0]) + "?populate=communicationratingdescriptions,interpersonalratingdescriptions,leadershipratingdescriptions,problemsolvingratingdescriptions,teamworkratingdescriptions,techskillsratingdescriptions,softskilldescriptions"
+                url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=communicationratingdescriptions,interpersonalratingdescriptions,leadershipratingdescriptions,problemsolvingratingdescriptions,teamworkratingdescriptions,techskillsratingdescriptions,softskilldescriptions"
                 d = requests.get(url)
                 dd = d.json()
 
@@ -657,7 +657,7 @@ if choice=='Manage Learner':
                  st.write("Please select a learner")             
 if choice=='Manage Team Leader':
     try:
-        URLLEADER = "https://truthful-health-29656117e6.strapiapp.com/api/teamleaders"
+        URLLEADER = "http://localhost:1337/api/teamleaders"
         d = requests.get(URLLEADER)
         dd = d.json()
         z = 0
@@ -691,7 +691,7 @@ if choice=='Manage Team Leader':
 
     with tab1:
         try:
-            url = "https://truthful-health-29656117e6.strapiapp.com/api/teamleaders/" + str(LEADERID[0])
+            url = "http://localhost:1337/api/teamleaders/" + str(LEADERID[0])
             d = requests.get(url)
             dd = d.json()
             
@@ -727,7 +727,7 @@ if choice=='Manage Team Leader':
 
                     if submitted:
                         requests.post(
-                        "https://truthful-health-29656117e6.strapiapp.com/api/teamleaders/",
+                        "http://localhost:1337/api/teamleaders/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -742,7 +742,7 @@ if choice=='Manage Team Leader':
                
 if choice=='Manage Team':
     try:
-        URLLEADER = "https://truthful-health-29656117e6.strapiapp.com/api/teams"
+        URLLEADER = "http://localhost:1337/api/teams"
         d = requests.get(URLLEADER)
         dd = d.json()
         z = 0
@@ -774,7 +774,7 @@ if choice=='Manage Team':
 
     with tab1:
         try:
-            url = "https://truthful-health-29656117e6.strapiapp.com/api/teams/" + str(TEAMID[0])
+            url = "http://localhost:1337/api/teams/" + str(TEAMID[0])
             d = requests.get(url)
             dd = d.json()
 
@@ -806,7 +806,7 @@ if choice=='Manage Team':
 
                     if submitted:
                         requests.post(
-                        "https://truthful-health-29656117e6.strapiapp.com/api/teams/",
+                        "http://localhost:1337/api/teams/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -820,7 +820,7 @@ if choice=='Manage Team':
 
 if choice=='Manage Projects':
     try:
-        URLPROJECT = "https://truthful-health-29656117e6.strapiapp.com/api/projects"
+        URLPROJECT = "http://localhost:1337/api/projects"
         d = requests.get(URLPROJECT)
         dd = d.json()
         z = 0
@@ -897,7 +897,7 @@ if choice=='Manage Projects':
     tab1, tab2 = st.tabs(["Manage Project", "Add Project" ])
     with tab1:
         try:
-            url = "https://truthful-health-29656117e6.strapiapp.com/api/projects/" + str(PROJECTID[0]) + "?populate=teams"
+            url = "http://localhost:1337/api/projects/" + str(PROJECTID[0]) + "?populate=teams"
             d = requests.get(url)
             dd = d.json()
 
@@ -976,7 +976,7 @@ if choice=='Manage Projects':
                     submitted = st.form_submit_button("Add a Project")
                     if submitted:
                         requests.post(
-                        "https://truthful-health-29656117e6.strapiapp.com/api/projects/",
+                        "http://localhost:1337/api/projects/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -991,7 +991,7 @@ if choice=='Manage Projects':
 
 if choice=='Manage Cohorts':
     try:
-        URLCOHORT = "https://truthful-health-29656117e6.strapiapp.com/api/cohorts"
+        URLCOHORT = "http://localhost:1337/api/cohorts"
         d = requests.get(URLCOHORT)
         dd = d.json()
         z = 0
@@ -1059,7 +1059,7 @@ if choice=='Manage Cohorts':
         
         try:
             
-            url = "https://truthful-health-29656117e6.strapiapp.com/api/cohorts/" + str(COHORTID[0]) + "?populate=teams"
+            url = "http://localhost:1337/api/cohorts/" + str(COHORTID[0]) + "?populate=teams"
             d = requests.get(url)
             dd = d.json()
             try:
@@ -1183,7 +1183,7 @@ if choice=='Manage Cohorts':
                     submitted = st.form_submit_button("Add Cohort")
                     if submitted:
                         requests.post(
-                        "https://truthful-health-29656117e6.strapiapp.com/api/cohorts/",
+                        "http://localhost:1337/api/cohorts/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -1198,7 +1198,7 @@ if choice=='Manage Cohorts':
 
 if choice=='Manage Personal Questions':
     try:
-        URLPERSONAL = "https://truthful-health-29656117e6.strapiapp.com/api/personal-questions"
+        URLPERSONAL = "http://localhost:1337/api/personal-questions"
         d = requests.get(URLPERSONAL)
         dd = d.json()
         z = 0
@@ -1234,7 +1234,7 @@ if choice=='Manage Personal Questions':
 
     with tab1:
         try:
-            url = "https://truthful-health-29656117e6.strapiapp.com/api/personal-questions/" + str(QUESTIONIDID[0])
+            url = "http://localhost:1337/api/personal-questions/" + str(QUESTIONIDID[0])
             d = requests.get(url)
             dd = d.json()
 
@@ -1283,7 +1283,7 @@ if choice=='Manage Personal Questions':
 
                     if submitted:
                         requests.post(
-                        "https://truthful-health-29656117e6.strapiapp.com/api/personal-questions/",
+                        "http://localhost:1337/api/personal-questions/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -1299,7 +1299,7 @@ if choice=='Manage Personal Questions':
 
 if choice=='Manage Contact Questions':
     try:
-        URLCONTACT = "https://truthful-health-29656117e6.strapiapp.com/api/contact-details"
+        URLCONTACT = "http://localhost:1337/api/contact-details"
         d = requests.get(URLCONTACT)
         dd = d.json()
         z = 0
@@ -1335,7 +1335,7 @@ if choice=='Manage Contact Questions':
 
     with tab1:
         try:
-            url = "https://truthful-health-29656117e6.strapiapp.com/api/contact-details/" + str(QUESTIONIDID[0])
+            url = "http://localhost:1337/api/contact-details/" + str(QUESTIONIDID[0])
             d = requests.get(url)
             dd = d.json()
 
@@ -1384,7 +1384,7 @@ if choice=='Manage Contact Questions':
 
                     if submitted:
                         requests.post(
-                        "https://truthful-health-29656117e6.strapiapp.com/api/contact-details/",
+                        "http://localhost:1337/api/contact-details/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
@@ -1400,7 +1400,7 @@ if choice=='Manage Contact Questions':
 
 if choice=='Manage Education Questions':
     try:
-        URLEDUCATION = "https://truthful-health-29656117e6.strapiapp.com/api/qualification-questions"
+        URLEDUCATION = "http://localhost:1337/api/qualification-questions"
         d = requests.get(URLEDUCATION)
         dd = d.json()
         z = 0
@@ -1436,7 +1436,7 @@ if choice=='Manage Education Questions':
 
     with tab1:
         try:
-            url = "https://truthful-health-29656117e6.strapiapp.com/api/qualification-questions/" + str(QUESTIONIDID[0])
+            url = "http://localhost:1337/api/qualification-questions/" + str(QUESTIONIDID[0])
             d = requests.get(url)
             dd = d.json()
 
@@ -1485,7 +1485,7 @@ if choice=='Manage Education Questions':
 
                     if submitted:
                         requests.post(
-                        "https://truthful-health-29656117e6.strapiapp.com/api/qualification-questions/",
+                        "http://localhost:1337/api/qualification-questions/",
                         headers={"Content-Type": "application/json"},
                         data=json.dumps(
                             {
