@@ -22,7 +22,7 @@ Export Functionality: The app allows users to export learner portfolio data to f
 ### How to run this app
 
 run "pip install requirements.txt"
-run "streamlit run testing.py"
+run "streamlit run main.py"
 
 
 
