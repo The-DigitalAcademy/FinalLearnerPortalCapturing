@@ -6,7 +6,6 @@ import tab4 as tab4__
 import tab5 as tab5__
 import tab6 as tab6__
 import tab7 as tab7__
-import tab8 as tab8__
 
 st.set_page_config(page_title="Employee Management Tool", page_icon=":bar_chart:", layout="wide")
 import json
@@ -36,9 +35,9 @@ menu_data = [
 menu_id = hc.nav_bar(menu_definition=menu_data)
 
 choice = menu_id
-firstname = []
-lastname = []
-learnerid = []
+sn = []
+sln = []
+sid = []
 
 if choice=='Manage Learner':
     try:
@@ -52,12 +51,12 @@ if choice=='Manage Learner':
         dd = requests.get(URLCOHORT).json()
         z = 0
         for i in range(len(dd['data'])):
-            firstname.append(dd['data'][z]['attributes']['firstname'])
-            lastname.append(dd['data'][z]['attributes']['lastname'])
-            learnerid.append(dd['data'][z]['id'])
+            sn.append(dd['data'][z]['attributes']['firstname'])
+            sln.append(dd['data'][z]['attributes']['lastname'])
+            sid.append(dd['data'][z]['id'])
             z = z + 1
             
-        deptss = pd.DataFrame(data=zip(firstname,lastname,learnerid),columns=['firstname','lastname','id'])
+        deptss = pd.DataFrame(data=zip(sn,sln,sid),columns=['firstname','lastname','id'])
         deptss['fullname'] = deptss['firstname'] + " " + deptss['lastname']
         LEARNER = st.selectbox(
                 "Select a learner",
@@ -67,9 +66,9 @@ if choice=='Manage Learner':
                 )
         Learn = deptss[deptss['fullname'] == LEARNER]
         LEARNERID = Learn['id'].values
-
     except:
          st.write("Please select a cohort above")
+
 
     tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(["Personal Details", "Contact Details", "Soft Skills Ratings","Technical Skills Ratings","Shaper Learner Review", "Project Responsibilities", 'Assign Team', 'Assign Project', 'Assign Skill Descriptions'])
     
@@ -90,8 +89,8 @@ if choice=='Manage Learner':
     with tab3:
         try:
             url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
-
-            dd = requests.get(url2).json()
+            d = requests.get(url2)
+            dd = d.json()
             try:
                 tab3_ = tab3__.tab3a__(dd, str(LEARNERID[0]))
             except:
@@ -101,7 +100,9 @@ if choice=='Manage Learner':
 
     with tab4:     
         try:
-            dd = requests.get(url2).json()
+            url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
+            d = requests.get(url2)
+            dd = d.json()
             try:
                 tab4_ = tab4__.tab4a__(dd, str(LEARNERID[0]))
             except:
@@ -111,7 +112,9 @@ if choice=='Manage Learner':
 
     with tab5:     
         try:
-            dd = requests.get(url2).json()
+            url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
+            d = requests.get(url2)
+            dd = d.json()
             try:
                 tab5_ = tab5__.tab5a__(dd, str(LEARNERID[0]))
             except:
@@ -121,40 +124,88 @@ if choice=='Manage Learner':
 
     with tab6:     
         try:
-            dd = requests.get(url2).json()
+            url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
+            d = requests.get(url2)
+            dd = d.json()
             try:
                 tab6_ = tab6__.tab6a__(dd, str(LEARNERID[0]))
             except:
                 tab6_ = tab6__.tab6b__(str(LEARNERID[0]))
+            
         except:
             st.write("")
 
+
     with tab7:
         try:
-            dd = requests.get(url2).json()
-            try:
-                tab7_ = tab7__.tab7a__()
-            except:
-                st.write("Please Select a Team Above")
-            try:
-                tab7_ = tab7__.tab7b__()
-            except:
-                st.write("Please Select a Team Above")
+            tab7_ = tab7__.tab7a__(str(LEARNERID[0]))
         except:
-            st.write("Please Select a Team Above")
+            st.write("")
 
+            
     with tab8:
         try:
-            try:
-                tab8_ = tab8__.tab8a__(dd, str(LEARNERID[0]))
-            except:
-                tab8_ = tab8__.tab8b__(str(LEARNERID[0]))
+            URLPROJECT = "http://localhost:1337/api/projects"
+            d = requests.get(URLPROJECT)
+            dd = d.json()
+            z = 0
+            sn=[]
+            tid=[]
+            sid=[]
+            sln=[]
+
+            for i in range(len(dd['data'])):
+                sn.append(dd['data'][z]['attributes']['projectname'])
+                sid.append(dd['data'][z]['id'])
+                z = z + 1
                 
+            deptss = pd.DataFrame(data=zip(sn,sid),columns=['projectname','id'])
+
+            PROJECT = st.selectbox(
+                    "Select a Project",
+                    (deptss['projectname']),
+                    index=None,
+                    placeholder="Select project here...",
+                    )
+            project = deptss[deptss['projectname'] == PROJECT]
+            PROJECTID = project['id'].values
+        except:
+            st.write("Please Select a project above")
+       
+        try:
+
+                url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=projects"
+                d = requests.get(url)
+                dd = d.json()
+
+                with st.form("my_formsxdsxddwceddsdsdsfecvdvcddfvsscxxs"):
+                        try:
+                            "Current Project is: " + dd['data']['attributes']['projects']['data'][0]['attributes']['projectname']
+                        except:
+                             "No project currently assigned to learner"
+
+                        submitted = st.form_submit_button("Change project to selected")
+                        
+
+                        if submitted:
+                            requests.put(
+                            url,
+                            headers={"Content-Type": "application/json"},
+                            data=json.dumps(
+                                {
+                                    "data": 
+                                        {
+                                            "projects": int(PROJECTID),
+                                        }
+                                }))
+                            st.success('This is a success message!', icon="✅")
+            
         except:
                  st.write("Please select a learner")  
     with tab9:
        
         try:
+
                 url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=communicationratingdescriptions,interpersonalratingdescriptions,leadershipratingdescriptions,problemsolvingratingdescriptions,teamworkratingdescriptions,techskillsratingdescriptions,softskilldescriptions"
                 d = requests.get(url)
                 dd = d.json()
