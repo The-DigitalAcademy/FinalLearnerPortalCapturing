@@ -47,7 +47,7 @@ if choice=='Manage Learner':
                     index=None,
                     placeholder="Select cohort here...",
                     )
-        URLCOHORT = "http://localhost:1337/api/applicants?filters[$or][0][Program][$eq]="+str(COHORT)
+        URLCOHORT = "http://localhost:1337/api/learners?filters[$or][0][Program][$eq]="+str(COHORT)
         dd = requests.get(URLCOHORT).json()
         z = 0
         for i in range(len(dd['data'])):
@@ -74,21 +74,21 @@ if choice=='Manage Learner':
     
     with tab1:
         try:
-            url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0])   
+            url = "http://localhost:1337/api/learners/" + str(LEARNERID[0])   
             tab1_ = tab1__.tab1__(url)
         except:
             st.write("Please select a learner")
 
     with tab2:
         try:
-           url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0])  
+           url = "http://localhost:1337/api/learners/" + str(LEARNERID[0])  
            tab2_ = tab2__.tab2__(url)
         except:
             st.write("")
  
     with tab3:
         try:
-            url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
+            url2 = "http://localhost:1337/api/learners/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
             d = requests.get(url2)
             dd = d.json()
             try:
@@ -100,7 +100,7 @@ if choice=='Manage Learner':
 
     with tab4:     
         try:
-            url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
+            url2 = "http://localhost:1337/api/learners/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
             d = requests.get(url2)
             dd = d.json()
             try:
@@ -112,7 +112,7 @@ if choice=='Manage Learner':
 
     with tab5:     
         try:
-            url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
+            url2 = "http://localhost:1337/api/learners/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
             d = requests.get(url2)
             dd = d.json()
             try:
@@ -124,7 +124,7 @@ if choice=='Manage Learner':
 
     with tab6:     
         try:
-            url2 = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
+            url2 = "http://localhost:1337/api/learners/" + str(LEARNERID[0]) +"?populate=teams,softskillratings,techskillratings,shaperreviews,responsibilities"
             d = requests.get(url2)
             dd = d.json()
             try:
@@ -174,7 +174,7 @@ if choice=='Manage Learner':
        
         try:
 
-                url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=projects"
+                url = "http://localhost:1337/api/learners/" + str(LEARNERID[0]) + "?populate=projects"
                 d = requests.get(url)
                 dd = d.json()
 
@@ -206,7 +206,7 @@ if choice=='Manage Learner':
        
         try:
 
-                url = "http://localhost:1337/api/applicants/" + str(LEARNERID[0]) + "?populate=communicationratingdescriptions,interpersonalratingdescriptions,leadershipratingdescriptions,problemsolvingratingdescriptions,teamworkratingdescriptions,techskillsratingdescriptions,softskilldescriptions"
+                url = "http://localhost:1337/api/learners/" + str(LEARNERID[0]) + "?populate=communicationratingdescriptions,interpersonalratingdescriptions,leadershipratingdescriptions,problemsolvingratingdescriptions,teamworkratingdescriptions,techskillsratingdescriptions,softskilldescriptions"
                 d = requests.get(url)
                 dd = d.json()
 
