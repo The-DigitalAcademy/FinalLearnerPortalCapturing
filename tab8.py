@@ -34,7 +34,7 @@ def tab8a__():
     PROJECTID = project['id'].values
 
 def tab8b__(lid):
-    url = "http://localhost:1337/api/applicants/" + lid+ "?populate=projects"
+    url = "http://localhost:1337/api/learners/" + lid+ "?populate=projects"
     d = requests.get(url)
     dd = d.json()
 

@@ -39,7 +39,7 @@ def tab7a__(lid):
             st.write("Please Select a Team Above")
 
     try:
-                url = "http://localhost:1337/api/applicants/" + str(lid) + "?populate=teams"
+                url = "http://localhost:1337/api/learners/" + str(lid) + "?populate=teams"
                 d = requests.get(url)
                 dd = d.json()
                 with st.form("my_formsxdsxdeddfecvdvcddfvsscxxs"):
